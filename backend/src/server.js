@@ -4,23 +4,37 @@ require('dotenv').config();
 const express = require('express');
 const pool = require('./config/database');
 
+const schedulesRouter = require('./routes/schedules.routes');
+const rescheduleRequestsRouter = require('./routes/reschedule-requests.routes');
+const availableSlotsRouter = require('./routes/available-slots.routes');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
 
+// API routes
+app.use('/api/schedules', schedulesRouter);
+app.use('/api/reschedule-requests', rescheduleRequestsRouter);
+app.use('/api/available-slots', availableSlotsRouter);
+
+// Root endpoint
 app.get('/', (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
     message: 'Smart Reschedule Assistant API is running',
   });
 });
 
+// Health check
 app.get('/api/health', async (req, res) => {
   try {
-    const result = await pool.query('SELECT current_database() AS database');
+    const result = await pool.query(
+      'SELECT current_database() AS database'
+    );
 
-    res.status(200).json({
+    return res.status(200).json({
       status: 'success',
       message: 'API and database are running',
       database: result.rows[0].database,
@@ -28,13 +42,14 @@ app.get('/api/health', async (req, res) => {
   } catch (error) {
     console.error('Database health check failed:', error.message);
 
-    res.status(503).json({
+    return res.status(503).json({
       status: 'error',
       message: 'Database connection failed',
     });
   }
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
