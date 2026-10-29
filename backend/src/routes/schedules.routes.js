@@ -1,14 +1,15 @@
-
 const express = require('express');
 const pool = require('../config/database');
+const { authenticateToken } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
 // GET /api/schedules
-// Mengambil seluruh jadwal, diurutkan dari tanggal dan waktu paling awal.
-router.get('/', async (req, res) => {
+// Admin mengambil seluruh jadwal.
+// Customer hanya mengambil jadwal miliknya.
+router.get('/', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query(`
+    const query = `
       SELECT
         id,
         customer_name,
@@ -20,8 +21,14 @@ router.get('/', async (req, res) => {
         created_at,
         updated_at
       FROM schedules
+      ${req.user.role === 'CUSTOMER' ? 'WHERE customer_id = $1' : ''}
       ORDER BY schedule_date ASC, start_time ASC
-    `);
+    `;
+
+    const result =
+      req.user.role === 'CUSTOMER'
+        ? await pool.query(query, [req.user.id])
+        : await pool.query(query);
 
     return res.status(200).json({
       status: 'success',
@@ -40,8 +47,10 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/schedules/:id
-// Mengambil detail satu jadwal berdasarkan ID.
-router.get('/:id', async (req, res) => {
+// Mengambil detail jadwal.
+// Admin dapat mengambil jadwal apa pun.
+// Customer hanya dapat mengambil jadwal miliknya.
+router.get('/:id', authenticateToken, async (req, res) => {
   const id = Number(req.params.id);
 
   if (!Number.isSafeInteger(id) || id <= 0) {
@@ -52,23 +61,30 @@ router.get('/:id', async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      `
-        SELECT
-          id,
-          customer_name,
-          class_name,
-          TO_CHAR(schedule_date, 'YYYY-MM-DD') AS schedule_date,
-          start_time,
-          end_time,
-          status,
-          created_at,
-          updated_at
-        FROM schedules
-        WHERE id = $1
-      `,
-      [id]
-    );
+    const query = `
+      SELECT
+        id,
+        customer_name,
+        class_name,
+        TO_CHAR(schedule_date, 'YYYY-MM-DD') AS schedule_date,
+        start_time,
+        end_time,
+        status,
+        created_at,
+        updated_at
+      FROM schedules
+      WHERE id = $1
+      ${
+        req.user.role === 'CUSTOMER'
+          ? 'AND customer_id = $2'
+          : ''
+      }
+    `;
+
+    const result =
+      req.user.role === 'CUSTOMER'
+        ? await pool.query(query, [id, req.user.id])
+        : await pool.query(query, [id]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({

@@ -1,9 +1,9 @@
-
 require('dotenv').config();
 
 const express = require('express');
 const pool = require('./config/database');
 
+const authRouter = require('./routes/auth.routes');
 const schedulesRouter = require('./routes/schedules.routes');
 const rescheduleRequestsRouter = require('./routes/reschedule-requests.routes');
 const availableSlotsRouter = require('./routes/available-slots.routes');
@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 // API routes
+app.use('/api/auth', authRouter);
 app.use('/api/schedules', schedulesRouter);
 app.use('/api/reschedule-requests', rescheduleRequestsRouter);
 app.use('/api/available-slots', availableSlotsRouter);
