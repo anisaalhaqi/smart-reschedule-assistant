@@ -1,0 +1,44 @@
+scenario_id,intent,status,n_slots,source,fallback_reason,fictitious_slot,draft_text,skor_ketepatan_slot,skor_kesesuaian_intent,skor_kejelasan,skor_kesopanan
+S01,RESCHEDULE,APPROVED,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Ibu Ratna, terima kasih sudah mengabari 🙏 Sesi yoga dari Kamis, 15 Oktober 2026 pukul 09:00 sudah kami pindahkan ke Sabtu, 17 Oktober 2026 pukul 08:00. Sampai bertemu di Gymnasyum ya, Ibu Ratna!",,,,
+S02,RESCHEDULE,APPROVED,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Bapak Hendra, terima kasih sudah mengabari 🙏 Sesi senam lansia dari Kamis, 15 Oktober 2026 pukul 09:00 sudah kami pindahkan ke Sabtu, 17 Oktober 2026 pukul 08:00. Sampai bertemu di Gymnasyum ya, Bapak Hendra!",,,,
+S03,RESCHEDULE,PENDING,0,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Kak Siska, permintaan pindah jadwal sudah kami terima dan sedang kami cek ketersediaannya ya 🙏",,,,
+S04,RESCHEDULE,PENDING,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Ibu Lestari, permintaan pindah jadwal sudah kami terima 🙏 Slot yang masih tersedia:
+• Sabtu, 17 Oktober 2026 pukul 08:00–09:00
+Mau dipindahkan ke slot yang mana, Ibu Lestari?",,,,
+S05,RESCHEDULE,PENDING,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Kak Budi, permintaan pindah jadwal sudah kami terima 🙏 Slot yang masih tersedia:
+• Sabtu, 17 Oktober 2026 pukul 08:00–09:00
+• Sabtu, 17 Oktober 2026 pukul 10:00–11:00
+• Minggu, 18 Oktober 2026 pukul 16:00–17:00
+Mau dipindahkan ke slot yang mana, Kak Budi?",,,,
+S06,RESCHEDULE,REJECTED,0,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Ibu Ratna, mohon maaf untuk saat ini belum ada slot yang sesuai. Kami akan segera mengabari Ibu Ratna jika ada slot kosong 🙏",,,,
+S07,RESCHEDULE,REJECTED,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Bapak Hendra, mohon maaf jadwal yang Bapak Hendra minta belum bisa kami penuhi. Berikut slot yang masih tersedia:
+• Sabtu, 17 Oktober 2026 pukul 08:00–09:00
+Silakan pilih yang paling nyaman ya, Bapak Hendra.",,,,
+S08,RESCHEDULE,REJECTED,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Kak Siska, mohon maaf jadwal yang Kak Siska minta belum bisa kami penuhi. Berikut slot yang masih tersedia:
+• Sabtu, 17 Oktober 2026 pukul 08:00–09:00
+• Sabtu, 17 Oktober 2026 pukul 10:00–11:00
+• Minggu, 18 Oktober 2026 pukul 16:00–17:00
+Silakan pilih yang paling nyaman ya, Kak Siska.",,,,
+S09,CANCELLATION,APPROVED,0,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Ibu Lestari, sesi Zumba pada Kamis, 15 Oktober 2026 pukul 09:00 sudah kami batalkan ya. Semoga semuanya lancar, dan kabari kami kapan saja jika ingin booking kembali 🙏",,,,
+S10,CANCELLATION,APPROVED,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Kak Budi, sesi Personal Training pada Kamis, 15 Oktober 2026 pukul 09:00 sudah kami batalkan ya. Semoga semuanya lancar, dan kabari kami kapan saja jika ingin booking kembali 🙏",,,,
+S11,CANCELLATION,APPROVED,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Ibu Ratna, sesi Yoga pada Kamis, 15 Oktober 2026 pukul 09:00 sudah kami batalkan ya. Semoga semuanya lancar, dan kabari kami kapan saja jika ingin booking kembali 🙏",,,,
+S12,CANCELLATION,PENDING,0,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Bapak Hendra, pesan pembatalan sesi Senam Lansia pada Kamis, 15 Oktober 2026 pukul 09:00 sudah kami terima dan sedang kami proses ya. Kabari kami kapan saja jika ingin booking kembali 🙏",,,,
+S13,CANCELLATION,PENDING,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Kak Siska, pesan pembatalan sesi Pilates pada Kamis, 15 Oktober 2026 pukul 09:00 sudah kami terima dan sedang kami proses ya. Kabari kami kapan saja jika ingin booking kembali 🙏",,,,
+S14,CANCELLATION,PENDING,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Ibu Lestari, pesan pembatalan sesi Zumba pada Kamis, 15 Oktober 2026 pukul 09:00 sudah kami terima dan sedang kami proses ya. Kabari kami kapan saja jika ingin booking kembali 🙏",,,,
+S15,SCHEDULE_INQUIRY,PENDING,0,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Kak Budi, mohon maaf untuk waktu tersebut belum ada slot yang tersedia. Apakah Kak Budi berkenan dengan hari atau jam lain?",,,,
+S16,SCHEDULE_INQUIRY,PENDING,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Ibu Ratna, berikut slot yang masih tersedia:
+• Sabtu, 17 Oktober 2026 pukul 08:00–09:00
+Silakan kabari kami slot mana yang ingin Ibu Ratna pilih ya 😊",,,,
+S17,SCHEDULE_INQUIRY,PENDING,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Bapak Hendra, berikut slot yang masih tersedia:
+• Sabtu, 17 Oktober 2026 pukul 08:00–09:00
+• Sabtu, 17 Oktober 2026 pukul 10:00–11:00
+• Minggu, 18 Oktober 2026 pukul 16:00–17:00
+Silakan kabari kami slot mana yang ingin Bapak Hendra pilih ya 😊",,,,
+S18,CONFIRMATION,APPROVED,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Terima kasih Kak Siska atas konfirmasinya 🙏 Kami tunggu kehadirannya pada Sabtu, 17 Oktober 2026 pukul 08:00 ya.",,,,
+S19,CONFIRMATION,APPROVED,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Terima kasih Ibu Lestari atas konfirmasinya 🙏 Kami tunggu kehadirannya pada Sabtu, 17 Oktober 2026 pukul 08:00 ya.",,,,
+S20,CONFIRMATION,PENDING,0,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Terima kasih Kak Budi atas konfirmasinya 🙏 Kami tunggu kehadirannya pada Kamis, 15 Oktober 2026 pukul 09:00 ya.",,,,
+S21,CONFIRMATION,PENDING,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Terima kasih Ibu Ratna atas konfirmasinya 🙏 Kami tunggu kehadirannya pada Kamis, 15 Oktober 2026 pukul 09:00 ya.",,,,
+S22,CONFIRMATION,PENDING,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Terima kasih Bapak Hendra atas konfirmasinya 🙏 Kami tunggu kehadirannya pada Kamis, 15 Oktober 2026 pukul 09:00 ya.",,,,
+S23,OTHER,PENDING,0,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Kak Siska, terima kasih sudah menghubungi Gymnasyum 🙏 Pesan Kak Siska sudah kami terima dan akan segera kami bantu ya.",,,,
+S24,OTHER,PENDING,1,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Ibu Lestari, terima kasih sudah menghubungi Gymnasyum 🙏 Pesan Ibu Lestari sudah kami terima dan akan segera kami bantu ya.",,,,
+S25,OTHER,PENDING,3,TEMPLATE,LLM_UNAVAILABLE,TIDAK,"Halo Kak Budi, terima kasih sudah menghubungi Gymnasyum 🙏 Pesan Kak Budi sudah kami terima dan akan segera kami bantu ya.",,,,

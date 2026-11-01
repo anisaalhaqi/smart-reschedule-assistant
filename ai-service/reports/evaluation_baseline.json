@@ -1,0 +1,198 @@
+{
+  "model": {
+    "model_name": "tfidf-logreg",
+    "model_version": "tfidf-lr-20261101"
+  },
+  "threshold": 0.6,
+  "results": {
+    "synthetic_test": {
+      "n": 225,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class": {
+        "RESCHEDULE": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "CANCELLATION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "SCHEDULE_INQUIRY": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "CONFIRMATION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "OTHER": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          45,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          45,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          45,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          45,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          45
+        ]
+      ],
+      "needs_review_count": 1,
+      "errors": []
+    },
+    "manual_test": {
+      "n": 100,
+      "accuracy": 0.94,
+      "macro_f1": 0.9405,
+      "per_class": {
+        "RESCHEDULE": {
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1-score": 0.9,
+          "support": 20.0
+        },
+        "CANCELLATION": {
+          "precision": 0.9524,
+          "recall": 1.0,
+          "f1-score": 0.9756,
+          "support": 20.0
+        },
+        "SCHEDULE_INQUIRY": {
+          "precision": 0.8571,
+          "recall": 0.9,
+          "f1-score": 0.878,
+          "support": 20.0
+        },
+        "CONFIRMATION": {
+          "precision": 1.0,
+          "recall": 0.95,
+          "f1-score": 0.9744,
+          "support": 20.0
+        },
+        "OTHER": {
+          "precision": 1.0,
+          "recall": 0.95,
+          "f1-score": 0.9744,
+          "support": 20.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          18,
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          20,
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          18,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          19,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          19
+        ]
+      ],
+      "needs_review_count": 12,
+      "errors": [
+        {
+          "message_text": "min, coach dimas hari ini aku ga dapet ijin kantor. ada slot pengganti jumat malem?",
+          "true": "RESCHEDULE",
+          "pred": "SCHEDULE_INQUIRY",
+          "confidence": 0.9004
+        },
+        {
+          "message_text": "lusa aku keluar kota, sesinya ganti minggu depan aja ya kak",
+          "true": "RESCHEDULE",
+          "pred": "CANCELLATION",
+          "confidence": 0.4272
+        },
+        {
+          "message_text": "Kak boleh minta list jadwal zumba bulan depan?",
+          "true": "SCHEDULE_INQUIRY",
+          "pred": "RESCHEDULE",
+          "confidence": 0.4923
+        },
+        {
+          "message_text": "kak sesi aku yg kemarin dipindah itu jadinya hari apa ya?",
+          "true": "SCHEDULE_INQUIRY",
+          "pred": "RESCHEDULE",
+          "confidence": 0.4385
+        },
+        {
+          "message_text": "boleh kak yg slot pertama aja",
+          "true": "CONFIRMATION",
+          "pred": "SCHEDULE_INQUIRY",
+          "confidence": 0.8089
+        },
+        {
+          "message_text": "kak di sana ada kolam renang ga",
+          "true": "OTHER",
+          "pred": "SCHEDULE_INQUIRY",
+          "confidence": 0.509
+        }
+      ]
+    }
+  }
+}

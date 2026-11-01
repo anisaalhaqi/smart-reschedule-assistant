@@ -1,0 +1,5 @@
+# Untuk fine-tuning / inference IndoBERT (disarankan di Google Colab GPU)
+-r requirements.txt
+torch
+transformers
+accelerate

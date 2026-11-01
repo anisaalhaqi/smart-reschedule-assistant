@@ -1,0 +1,226 @@
+id,message_text,intent,source,style
+syn-00421,jadwal aq besok jam berapa ya permisi ka?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00987,Selamat pagi kak lusa siang ada slot kosong ga?,SCHEDULE_INQUIRY,TEMPLATE,formal
+syn-00594,"Kakak hari ini pukul 7 skip dulu ya kak, gausah dicariin ganti",CANCELLATION,AUGMENTED,formal
+syn-00225,"Halo kak saya izin tidak ikut kelas senam hari kamis minggu depan, mau ke dokter",CANCELLATION,AUGMENTED,formal
+syn-01310,min nanti setengah 8 ada slot kosong ga?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00383,"baik selamat pagi kak, saya ambil slot lusa jam 08.00",CONFIRMATION,TEMPLATE,santai
+syn-00619,Pagi kak klo hari kamis mlm masih bsa booking?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00734,"Permisi kak cucu saya datang, jadi rabu jam 08.00 skip dulu, gantinya besok jam 19.00 bisa?",RESCHEDULE,AUGMENTED,formal
+syn-00829,Selamat siang admin AC di ruang yoga panas banget,OTHER,AUGMENTED,santai
+syn-00222,kakak kira-kira senin minggu depan rame ga? masih bisa daftar? 😅,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00263,"Baik mas, saya konfirmasi kehadiran untuk kelas senam kamis pagi. Terima kasih.",CONFIRMATION,TEMPLATE,formal
+syn-01368,kalo siang biasanya ada kelas apaaa aja?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00861,"hai kak iya jadwal hari kamis mlm udah pas, makasih",CONFIRMATION,AUGMENTED,santai
+syn-00843,Mbak jam brp aja yang kosong nanti?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01074,Kak kamis depan masih ada tempat ga buat sesi gym?,SCHEDULE_INQUIRY,TEMPLATE,formal
+syn-00623,"Mohon maaf hai kak, untuk kelas pilates jumat jam 4 sore apakah bisa dipindahkan ke senin pagi? Saya ada meeting mendadak.",RESCHEDULE,AUGMENTED,formal
+syn-01445,"Mas saya Rara, sesi jumat pagi mau saya majukan ke minggu sore",RESCHEDULE,TEMPLATE,formal
+syn-01294,Sore kak mau cancel latihan hari minggu pagi makasih,CANCELLATION,AUGMENTED,formal
+syn-00057,"Mbak booking saya yang lusa jam 16.00 tolong dibatalkan, terima kasih",CANCELLATION,AUGMENTED,formal
+syn-01474,"maaf assalamualaikum kak, ada pengajian. jadwalnya bs diganti minggu depan?",RESCHEDULE,AUGMENTED,santai
+syn-01267,"Assalamualaikum kk minggu minggu depan skip dl ya kak, gausah dicariin ganti",CANCELLATION,AUGMENTED,santai
+syn-00706,Tolong pindahin jadwal saya ke senin siang permisi kak,RESCHEDULE,TEMPLATE,formal
+syn-00009,jadwal kamis sore minta digeser ke hari minggu pagi ya,RESCHEDULE,TEMPLATE,santai
+syn-00994,Selamat pagi kak loker bisa disewa bulanan?,OTHER,TEMPLATE,formal
+syn-01342,kkaak klo mau perpanjang member gimana caranya?,OTHER,AUGMENTED,santai
+syn-01018,"Kak cancel aja minggu depan, saya nggak bisa reschedule juga",CANCELLATION,AUGMENTED,formal
+syn-00591,halo kak saya mundur dari kelas aerobik lusa malam ya mohon maaf ya,CANCELLATION,TEMPLATE,santai
+syn-00657,Mbak cocok ga ya buat lansia yang lututnya sakit?,OTHER,AUGMENTED,formal
+syn-00018,"Min untuk lusa jam 4 sore di-cancel aja ya, belum tau kapan bisa lagi",CANCELLATION,TEMPLATE,formal
+syn-00760,"Maaf halo admin mau ke dokter, minta tlg dipindah jadwalnya ke hari kamis setengah 8 🥲",RESCHEDULE,AUGMENTED,santai
+syn-00827,Harga member tahunan sekarang berapa?,OTHER,AUGMENTED,santai
+syn-01166,Sip kak,CONFIRMATION,AUGMENTED,santai
+syn-00842,Makaish banyak 🙏 🙏,OTHER,AUGMENTED,santai
+syn-01349,kak admin AC di ruang yoga panas banget,OTHER,AUGMENTED,santai
+syn-00279,Mas udh transfer ya utk paket private coaching,OTHER,AUGMENTED,santai
+syn-00773,sore ka hari ini jam 9 ada slot kosong ga? 🙏🏻,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00763,Permisi kak kalau sesi PT saya dipindah ke nanti siang bisa nggak? nanti pukul 7 berhalangan,RESCHEDULE,AUGMENTED,formal
+syn-00622,Halo admin slot yg ditawarkan tgl 19 jam 10 saya setuju,CONFIRMATION,AUGMENTED,santai
+syn-00080,"oke makasih pagi kak, berarti tanggal 23 jam 16.00 ya",CONFIRMATION,AUGMENTED,santai
+syn-00164,bisa reschedule ke selasa malam ga kak admin? anak saya sakit,RESCHEDULE,TEMPLATE,santai
+syn-00169,"halo admin kamis pagi aq off dulu ya, lagi kurang enak badan, ga usah diganti",CANCELLATION,AUGMENTED,santai
+syn-00875,"halo kak jadi ya kamis siang, saya sudah catat",CONFIRMATION,TEMPLATE,santai
+syn-00127,Coach Bayu kosongnya hari apa aja ya?,SCHEDULE_INQUIRY,AUGMENTED,formal
+syn-00942,kakak saya mundur dari kelas aerobik hari sabtu malam ya 😊,CANCELLATION,TEMPLATE,santai
+syn-00637,Hai kk yg available kamis jam brp aja?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00040,Selamat pagi selamat pagi kak,OTHER,TEMPLATE,formal
+syn-00575,Pagi kak slot yang ditawarkan minggu siang saya setuju,CONFIRMATION,AUGMENTED,formal
+syn-01277,"mas batalin jadwal saya tanggal 2 jam 10 ya, nanti saya kabari lagi kalau mau bookingggg",CANCELLATION,AUGMENTED,santai
+syn-00003,"Halo admin kelas aerobik minggu sore cancel ya, lagi flu",CANCELLATION,TEMPLATE,formal
+syn-00470,Pagi kakkk klo sesi saya dipindah ke jumat jam 9 bisa nggak? minggu malam tidak bisa,RESCHEDULE,AUGMENTED,santai
+syn-00713,halo kak saya mau baayr via transfer ke rekening mana?,OTHER,AUGMENTED,santai
+syn-00434,"Halo admin batal ya tanggal 22 pukul 7, lagi kurang enak badan",CANCELLATION,AUGMENTED,formal
+syn-00484,"Assalamualaikum kak mau tanya, sesi private minggu dpn ada di hari apa saja?",SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00504,halo kak kelas saya besok jam 5 sore hapus aja ya,CANCELLATION,AUGMENTED,santai
+syn-01169,geser ke sabtu pagi bisa ga ka,RESCHEDULE,AUGMENTED,santai
+syn-00220,kakakk ada promo bulan ini?,OTHER,AUGMENTED,santai
+syn-00753,Halo kak kenapa tagihan saya dobel ya?,OTHER,TEMPLATE,formal
+syn-01035,"Selamat siang, dengan ini saya membatalkan jadwal kelas pada senin sore. Mohon maaf. 🙂",CANCELLATION,AUGMENTED,formal
+syn-00506,"Maaf kak admin, lagi flu. jadwalnya bisa diganti minggu depan? 🥲",RESCHEDULE,AUGMENTED,formal
+syn-01208,Sore kak jadwal sesi private senin jam berapa aja ya,SCHEDULE_INQUIRY,AUGMENTED,formal
+syn-00817,Mbak kenapa tagihan saya dobel ya?,OTHER,TEMPLATE,formal
+syn-00564,pagi kk kamis sore ada slot kosong ga?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00093,makasih banyak selamatt siang admin 🙏,OTHER,AUGMENTED,santai
+syn-00812,"Halo admin batal ya rabu siang, ada meeting mendadak",CANCELLATION,AUGMENTED,formal
+syn-01378,"Mbak siap laksanakan, nanti jam 10 saya hadir",CONFIRMATION,AUGMENTED,formal
+syn-00725,"Mbak mohon izin, sesi gym minggu malam bisa dimundurkan ke selasa malam?",RESCHEDULE,AUGMENTED,formal
+syn-00558,"Hai kak iya jadwal kamis depan sudah pas, terima kasih",CONFIRMATION,AUGMENTED,formal
+syn-00928,"Min aku lupa jdwl sesi coaching saya, kapan ya?",SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01339,"Kakak saya lupa jadwal senam lansia saya, kapan ya?",SCHEDULE_INQUIRY,TEMPLATE,formal
+syn-00663,minggu depan masih ada tempat ga buatt sesi pt?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01120,Hai kak jam berapa aja yang kosong besok?,SCHEDULE_INQUIRY,TEMPLATE,formal
+syn-01430,mas handuk saya ketinggalan di loker,OTHER,TEMPLATE,santai
+syn-00451,"Halo kak batalin jadwal saya senin sore ya, nanti saya kabari lagi kalau mau booking",CANCELLATION,AUGMENTED,formal
+syn-00156,"Oke kak admin, hari kamis jam 8 aja ya, ya, maaf merepotkan 🙏🏻",CONFIRMATION,AUGMENTED,formal
+syn-01442,Kakak coach Tika bisa bantu program diet?,OTHER,TEMPLATE,formal
+syn-01451,assalamualaikum kak tolong kirim jadwal kleas yoga bulan inii,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01421,Bisa reschedule ke besok sore ga permisi kak? ada urusan kantor,RESCHEDULE,TEMPLATE,formal
+syn-01028,min sesi syyy berikutnya kapan ya? 👍,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01276,"Selamat siang, saya mohon jdwl sesi coaching saya diubah menjadi tgl 18 jam 8 karena ART saya pulang kampung. 😅",RESCHEDULE,AUGMENTED,santai
+syn-00258,"halo admin siap laksanakan, lusa jam 3 sore saya hadir",CONFIRMATION,AUGMENTED,santai
+syn-01493,"Baik, saya setuju dipindah ke minggu malam. Terima kasih kakak",CONFIRMATION,AUGMENTED,formal
+syn-01009,"Cancel aja tanggal 27 pukul 7, saya nggak bisa reschedule juga",CANCELLATION,AUGMENTED,formal
+syn-00171,"Assalamualaikum kak iya betul, hari minggu siang saya tetap ikut",CONFIRMATION,AUGMENTED,formal
+syn-00310,tlg cancel booking jdwl saya dong 🥲,CANCELLATION,AUGMENTED,santai
+syn-00329,"Mohon maaf halo admin, untuk kelass pilates hari ini jam 4 sore apakah bisa dipindahkan ke tgl 3 jam 08.00? saya ada arisan",RESCHEDULE,AUGMENTED,santai
+syn-00053,terima ksaih kak adminnnn atas pelayanannya,OTHER,AUGMENTED,santai
+syn-01491,"kak rabu jam 5 sore absen dulu ya, lagi kurang enak badan. nanti klo udh sehat saya booking lagi",CANCELLATION,AUGMENTED,santai
+syn-00939,"Assalamualaikum kak cancel aja tanggal 18 jam 19.00, saya nggak bisa reschedule juga",CANCELLATION,TEMPLATE,formal
+syn-00774,hai ka kalau pagi biasanya ada kelas apa aja?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00120,Assalamualaikum kak slot yang ditawarkan sabtu malam saya setuju,CONFIRMATION,TEMPLATE,formal
+syn-01252,"Selamat pagi, saya ingin mengajukan perubahan jadwal body combat dari hari sabtu siang ke hari minggu pagi. trims. 😊",RESCHEDULE,AUGMENTED,santai
+syn-00073,Mas jadwal tanggal 14 setengah 8 minta digeser ke hari kamis sore ya,RESCHEDULE,AUGMENTED,santai
+syn-01439,Hai kak saya mau bayar via transfer ke rekening mana?,OTHER,TEMPLATE,formal
+syn-00851,kalau sore biasanya ada kelas apa aja?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00330,assalamualaikum kak ada diskon untuk lansia?,OTHER,TEMPLATE,santai
+syn-01270,permisi ka aku mau bayarr via transfer ke rekening mana? 🙏🏻,OTHER,AUGMENTED,santai
+syn-01272,"Sip selamat siang admin, sampai ketemu hari ini sore 🙂",CONFIRMATION,AUGMENTED,santai
+syn-01162,"sore ka aku nadia, mau batalin sesi hari sbtu jam 19.00. ga perlu dijadwalinnnn ulang",CANCELLATION,AUGMENTED,santai
+syn-01047,"kk admin mau tanya, sesi gym minggu dpnn ada di hari apa saja?",SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01129,bisa bayar pakai qris?,OTHER,AUGMENTED,santai
+syn-00962,Sore kak kenapa tagihan saya dobel ya? 🙏,OTHER,AUGMENTED,formal
+syn-00215,"Assalamualaikum kak ga jadi ikut kelas pilates hari kamis jam 10 ya, maaf banget",CANCELLATION,TEMPLATE,formal
+syn-00963,"Mbak saya Bu Yanti, mau batalin sesi hari ini pukul 7. ga perlu dijadwalin ulang",CANCELLATION,AUGMENTED,santai
+syn-00839,"Permisi, utk body combat di hari jumat apakah masih tersedia slot?",SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00808,"hai kak senin siang kan jadwal saya, bisa dimajuin ke senin malam?",RESCHEDULE,TEMPLATE,santai
+syn-00845,"siap mas, besok saya datang tepat waktu",CONFIRMATION,TEMPLATE,santai
+syn-00177,Nanti pagi penuh ga?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00809,"sy Bu Wati, sesi hari kamis jam 8 mau saya majukan ke hari ini setengah 8",RESCHEDULE,AUGMENTED,santai
+syn-00056,pagi kak jadwal minggu siang minta digeser ke hari minggu siang ya 😅,RESCHEDULE,AUGMENTED,santai
+syn-00490,"permisi kak batalin jadwal aku selasa siang ya, nanti saya kabari lagi klo mau booking",CANCELLATION,AUGMENTED,santai
+syn-01192,selamat pagi permisi kak,OTHER,TEMPLATE,santai
+syn-00884,halo kak yg lusa siang saya ambil ya,CONFIRMATION,AUGMENTED,santai
+syn-00106,"permisi kak senin sore ga bs, pindah minggu siang trims",RESCHEDULE,AUGMENTED,santai
+syn-00175,"mbak hari ini jam 10 bentrok, pindah minggu siang ya min",RESCHEDULE,AUGMENTED,santai
+syn-00346,"mau ke dokter, jadi besok jam 16.00 skip dulu, gantinya selasa setengah 8 bisa?",RESCHEDULE,AUGMENTED,santai
+syn-00874,"hai kak resched dong ke hari minggu sore, sabtu jam 8 bentrok 😊",RESCHEDULE,AUGMENTED,santai
+syn-00890,"sip kakak, sampai ketemu hari sabtu jam 08.00",CONFIRMATION,AUGMENTED,santai
+syn-01494,"Iya sore kak, jadi minggu jam 8 ya. saya pasti datang",CONFIRMATION,AUGMENTED,formal
+syn-00176,"iya selamat siang admin bisa, hari kamis jamm 08.00 cocok",CONFIRMATION,AUGMENTED,santai
+syn-00029,halo ka sudah transfer ya utk paket 10 sesi pt 🥲,OTHER,AUGMENTED,santai
+syn-00400,"mantap kk, hari sbtu jam 6 pagi fix ya",CONFIRMATION,AUGMENTED,santai
+syn-01217,"Kak admin sesi PT saya bulan ini dibatalkan semua dulu ya, ada urusan kantor",CANCELLATION,TEMPLATE,formal
+syn-00550,"Permisi, untuk kelas di hari hari minggu apakah masih tersedia slot?",SCHEDULE_INQUIRY,AUGMENTED,formal
+syn-00313,jadwal sy hari ini jam berapa ya pagi kak?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00114,Geser ke sabtu minggu depan bisa ga kakak,RESCHEDULE,TEMPLATE,formal
+syn-01054,"Batal ya rabu depan, ART saya pulang kampung",CANCELLATION,AUGMENTED,formal
+syn-01222,Kak admin coach Sari kosongnya hari apa aja ya?,SCHEDULE_INQUIRY,TEMPLATE,formal
+syn-00235,"iya kakak, jadi hari kamis pagi ya. saya pasti datang",CONFIRMATION,AUGMENTED,santai
+syn-00766,Bisa reschedule ke jumat jam 9 ga selamat pagi kak? hujan deras,RESCHEDULE,TEMPLATE,formal
+syn-00950,selamat pagi kak paket private coaching berapa ya?,OTHER,TEMPLATE,santai
+syn-01083,"hai kk mau ubah jadwal donk, dari selasa setengah 8 jadi hari sabtu mlm",RESCHEDULE,AUGMENTED,santai
+syn-01059,sore kk harga day pass sekarang berapa?,OTHER,AUGMENTED,santai
+syn-00727,"halo kakkkk jd ya minggu pagi, saya udh catat 👍",CONFIRMATION,AUGMENTED,santai
+syn-01333,Makasih banyak permisi kak 🙏,OTHER,AUGMENTED,formal
+syn-00030,"sipppp mbak, sampai ketemu selasa jam 4 sore 🙏🏻",CONFIRMATION,AUGMENTED,santai
+syn-01145,jdwl saya nanti jam berapa ya selamat saing admin? 😁,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00242,Selamat pagi kak cek slot selasa malam dong,SCHEDULE_INQUIRY,TEMPLATE,formal
+syn-00454,halo admin jadwal senam lansia rabu jam berapa aja ya,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00048,Hai kak kamis depan masih ada tempat ga buat jadwal?,SCHEDULE_INQUIRY,AUGMENTED,formal
+syn-01152,"assalamualaikum kak mau ke dokter, jadi kelas yogaaa rabu pagi batal ya",CANCELLATION,AUGMENTED,santai
+syn-00873,Ada promo bulan ini?,OTHER,TEMPLATE,formal
+syn-00067,"Baik kak admin, saya konfirmasi kehadiran untuk kelas senam minggu depan. Terima kasih.",CONFIRMATION,AUGMENTED,formal
+syn-01182,Sore ka yang sbtu saya ambil ya,CONFIRMATION,AUGMENTED,santai
+syn-00660,"Maaf halo admin ada arisan, minta tolong dipindah jadwalnya ke nanti sore",RESCHEDULE,AUGMENTED,formal
+syn-00408,Halo kak sesi saya pindahin tanggal 22 jam 9 ya trims,RESCHEDULE,AUGMENTED,formal
+syn-00109,"aku lupa jadwal kelas aerobik saya, kapan ya?",SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00229,Halo admin ada promo bulan ini? 👍,OTHER,AUGMENTED,formal
+syn-00712,"sabtu malam aq ga bsa dateng karena lagi flu, bisa diganti selasa jam 19.00?",RESCHEDULE,AUGMENTED,santai
+syn-00836,"mantap assalamualaikum kak, minggu siang fix ya",CONFIRMATION,AUGMENTED,santai
+syn-01444,bolehhhh minta ganti jadwal kelas sy jd tgl 9 jam 7? 🥲,RESCHEDULE,AUGMENTED,santai
+syn-00038,"mbak siap, saya hadir rabu pagi",CONFIRMATION,TEMPLATE,santai
+syn-00566,"Kak admin sesi minggu jam 16.00 sy batalkan dl ya, ada meeting mendadak",CANCELLATION,AUGMENTED,santai
+syn-01118,Kak admin yang kamis depan saya ambil ya,CONFIRMATION,AUGMENTED,formal
+syn-00469,Boleh bawa teman untuk trial?,OTHER,AUGMENTED,santai
+syn-01384,Tolong pindahin jadwal saya ke besok jam 7 kak admin,RESCHEDULE,TEMPLATE,formal
+syn-00562,tgl 26 jamm 7 mlm ada slot kosong ga?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01093,"Selamat pagi kak mohon izin, kelas pilates lusa jam 9 bisa dimundurkan ke rabu pagi?",RESCHEDULE,TEMPLATE,formal
+syn-00077,"ka admin nanti pagi skip dlu ya kak, gausah dicariin ganti 🙏",CANCELLATION,AUGMENTED,santai
+syn-01413,"assalamualaikum kak siap, saya hadir kamis sore",CONFIRMATION,AUGMENTED,santai
+syn-01388,"hai kak bisanya minggu jam 8 aja, kamis jam 5 sore ada halangan ya 👍",RESCHEDULE,AUGMENTED,santai
+syn-00936,kak admin saya mau ganti nomor hp yang terdaftar,OTHER,AUGMENTED,santai
+syn-00432,"Hai kak batalin jadwal saya jumat malam ya, nanti saya kabari lagi kalau mau booking",CANCELLATION,TEMPLATE,formal
+syn-00472,"Selamat siang, dengan ini saya membatalkan jadwal sesi pada jumat jam 19.00. Mohon maaf.",CANCELLATION,AUGMENTED,formal
+syn-00620,Makasih banyak 🙏,OTHER,TEMPLATE,formal
+syn-00695,"sore kak booking saya yg senin jam 5 sore tlg dibatalkan, trims",CANCELLATION,AUGMENTED,santai
+syn-00241,"Selamatt pagi kak on the way ya, sesi PT bsk tetap jadi kok",CONFIRMATION,AUGMENTED,santai
+syn-00290,"selamat pagi ka senin pagi skip dulu ya kak, gausah dicariin ganti",CANCELLATION,AUGMENTED,santai
+syn-01137,ka admin aq mau bayar via transferrrr ke rekening mana?,OTHER,AUGMENTED,santai
+syn-01225,"haiii kak on the way ya, jdwl nanti tetap jd kok",CONFIRMATION,AUGMENTED,santai
+syn-00567,"Selamat pagi kakak, boleh info jadwal kelas yoga minggu ini?",SCHEDULE_INQUIRY,TEMPLATE,formal
+syn-00043,min tlg kirim jdwlll personal training bulan ini,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01385,"Baik halo kak, saya ambil slot hari kamis siang",CONFIRMATION,AUGMENTED,formal
+syn-00719,"halo kak nanti jam 7 mlm mendadak gabisa nih, pindah ke senin jam 19.00 masih bisa ga",RESCHEDULE,AUGMENTED,santai
+syn-00514,"selamat pagi kak sudah saya terima jadwal barunya, makasih",CONFIRMATION,TEMPLATE,santai
+syn-00203,"Maaf mendadak badan lagi pegal semua, sesi minggu siang saya batalkan",CANCELLATION,AUGMENTED,formal
+syn-00687,"Pagi kak batal ya tanggal 25 jam 8, lagi di luar kota",CANCELLATION,TEMPLATE,formal
+syn-01190,Mbak saya mau bayar via transferrrr ke rekening mana?,OTHER,AUGMENTED,santai
+syn-01354,Selamat pagi mbak,OTHER,AUGMENTED,santai
+syn-00572,Mbak coach Tika masih kerja di sini? 😊,OTHER,AUGMENTED,formal
+syn-00555,"Mas saya izin tidak ikut kelas pilates tanggal 18 jam 5 sore, hujan deras 😅",CANCELLATION,AUGMENTED,formal
+syn-00412,"hai kak siap laksanakan, minggu mlm saya hadir",CONFIRMATION,AUGMENTED,santai
+syn-01289,"mohon maaf selamat pagi kk, untuk kelassss senam sbtu pagi apakah bisa dipindahkan ke lusa pukul 09.30? saya mau ke dokter.",RESCHEDULE,AUGMENTED,santai
+syn-00729,trims kakak atas pelayanannya,OTHER,AUGMENTED,santai
+syn-00998,permisi kak parkir mobil ada?,OTHER,TEMPLATE,santai
+syn-00604,Sore kak handuk saya ketinggalan di loker,OTHER,TEMPLATE,formal
+syn-00273,Kakak sudah transfer ya untuk membership bulanan,OTHER,TEMPLATE,formal
+syn-00460,kakak ada slot sore ga di mingdep? 🥲,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00322,Permisi kak hari minggu ini kelas aerobik jadi ada kan?,SCHEDULE_INQUIRY,TEMPLATE,formal
+syn-00404,"Hai kak untuk senin sore di-cancel aja ya, belum tau kapan bisa lagi",CANCELLATION,TEMPLATE,formal
+syn-01253,Sip dong,CONFIRMATION,AUGMENTED,formal
+syn-01089,selamat pagi kak slot yang ditawarkan minggu malam saya setuju,CONFIRMATION,TEMPLATE,santai
+syn-00724,mbak yg nanti jam 7 aqq ambil ya,CONFIRMATION,AUGMENTED,santai
+syn-01346,"Permisi kak booking saya yang besok jam 10an tolong dibatalkan, terima kasih",CANCELLATION,AUGMENTED,formal
+syn-00090,"Kak siap laksanakan, tgl 13 jam 4 sore sy hadir",CONFIRMATION,AUGMENTED,santai
+syn-00507,"sesi PT saya bulan ini dibatalkan semua dlu ya, ada pengajian 🙏",CANCELLATION,AUGMENTED,santai
+syn-00039,"Resched dong ke jumatt depan, minggu jam 6 pagi ga bisa",RESCHEDULE,AUGMENTED,santai
+syn-00420,"Selamat siang kak admin, saya mohon jadwal kelas saya diubah menjadi hari sabtu pagi karena ada urusan kantor.",RESCHEDULE,TEMPLATE,formal
+syn-00295,"Halo admin sudah aq terima jadwal barunya, makasih 🙂",CONFIRMATION,AUGMENTED,santai
+syn-00800,Hai kak wifi passwordnya apa?,OTHER,TEMPLATE,formal
+syn-00783,"Halo kak kayaknya sy stop duluuu sesi senin sore, suami minta dinatar",CANCELLATION,AUGMENTED,santai
+syn-01045,sore kak kelas yoga berapa ya?,OTHER,AUGMENTED,santai
+syn-00746,halo admin kelas yoga aku sabtu minggu depan hapus aja ya,CANCELLATION,AUGMENTED,santai
+syn-01279,Halo kak coach Fajar masih kerja di sini?,OTHER,AUGMENTED,formal
+syn-00985,"halo admin untuk jumat jam 7 malam di-cancel aja ya, belum tau kapan bisa lagi",CANCELLATION,TEMPLATE,santai
+syn-00693,"oke kakak noted, jumat pagi saya datang",CONFIRMATION,AUGMENTED,santai
+syn-00161,"Selamat pagi kak sesi PT aq bulan ini dibatalkan semua dulu ya, ada pengajian",CANCELLATION,AUGMENTED,santai
+syn-00474,halo admin slot kamis mlm masih ada yg kosong?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00980,"Selamat pagi, saya ingin mengajukan perubahan jadwal sesi gym dari sabtu minggu depan ke hari minggu sore. Terima kasih.",RESCHEDULE,TEMPLATE,formal
+syn-01425,"kak siap, akuuuu hadir lusa pukul 09.30",CONFIRMATION,AUGMENTED,santai
+syn-00854,yang available hari kamissss jam brp aja?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01437,Halo hai kak,OTHER,TEMPLATE,formal
+syn-00098,"kk admin jd ya rabu minggu dpn, saya sudah catat",CONFIRMATION,AUGMENTED,santai
+syn-00752,Handuk saya ketinggalan di loker,OTHER,AUGMENTED,formal
+syn-00831,"hai kak ga jd datang sabtu jam 10an, mohon dibatalkan",CANCELLATION,AUGMENTED,santai
+syn-00499,Halo ka yg hari kamis jam 10an aku ambil ya,CONFIRMATION,AUGMENTED,santai
+syn-00810,"Selamat pagi kak lusa jam 6 pagi ga bisa, ganti ke minggu depan aja bisa?",RESCHEDULE,TEMPLATE,formal
+syn-00726,"Mohon maaf halo admin, untuk sesi coaching hari minggu siang apakah bisa dipindahkan ke tanggal 26 jam 10an? Saya ada acara keluarga.",RESCHEDULE,TEMPLATE,formal
+syn-00253,Sore kak coach Sari ada slot hari sabtu sore?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-00552,min sesi saya berikutnya kaapn ya?,SCHEDULE_INQUIRY,AUGMENTED,santai
+syn-01386,latihan selasa pukul 09.30 saya undur ke hari sabtu pagi bisa kah?,RESCHEDULE,TEMPLATE,santai
+syn-00384,mbak kira-kira rabu pagi rame ga? masih bisa daftar?,SCHEDULE_INQUIRY,TEMPLATE,santai
+syn-00961,"halo admin saya Rara, sesi hari minggu setengah 8 mau saya majukan ke hari ini jam 6 pagi",RESCHEDULE,TEMPLATE,santai
+syn-00524,Ada slot sore ga di minggu depan? 🥲,SCHEDULE_INQUIRY,AUGMENTED,formal
+syn-00730,"ada acara keluarga, jd nanti jam 6 pagi skip dl, gantinya hari sabtu setengah 8 bisa?",RESCHEDULE,AUGMENTED,santai
+syn-00614,Tolong kirim jadwal sesi gym bulan ini,SCHEDULE_INQUIRY,TEMPLATE,formal
