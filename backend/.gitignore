@@ -3,3 +3,6 @@ node_modules/
 .env.*
 !.env.example
 .DS_Store
+.vscode/
+# Local backup for backend refactoring
+/refactor-backup/
