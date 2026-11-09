@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
-import SectionHeading from "../components/ui/SectionHeading";
-import RequestRow from "../components/requests/RequestRow";
-import RequestDetail from "../components/requests/RequestDetail";
+import SectionHeading from "../components/SectionHeading";
+import RequestRow from "../components/RequestRow";
+import RequestDetail from "../components/RequestDetail";
 
 export default function RequestsPage({ requests, selectedId, selectRequest, onStatusChange, onDraftChange, onApproveSlot }) {
   const [query, setQuery] = useState("");

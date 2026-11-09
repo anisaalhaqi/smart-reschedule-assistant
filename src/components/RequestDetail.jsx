@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import { CalendarDays, Check, CheckCheck, Clock3, Filter, Inbox, MessageCircle, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
 
-import Avatar from "../ui/Avatar";
-import StatusBadge from "../ui/StatusBadge";
+import Avatar from "../components/Avatar";
+import StatusBadge from "../components/StatusBadge";
 
 export default function RequestDetail({ request, onStatusChange, onDraftChange, onApproveSlot }) {
   const [selectedSlot, setSelectedSlot] = useState(request?.slots?.[0]?.id ?? null);

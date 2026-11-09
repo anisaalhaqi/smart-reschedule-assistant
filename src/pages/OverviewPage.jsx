@@ -1,6 +1,6 @@
 import { ArrowRight, CalendarDays, Check, CheckCheck, ChevronRight, Clock3, Inbox, ShieldCheck, Sparkles } from "lucide-react";
 
-import SectionHeading from "../components/ui/SectionHeading";
+import SectionHeading from "../components/SectionHeading";
 import StatCard from "../components/StatusCard";
 import Avatar from "../components/Avatar";
 
