@@ -16,20 +16,7 @@ export default function Topbar({ title, subtitle, setOpen }) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="hidden items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 md:flex">
-          <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          <span className="text-[11px] font-semibold text-slate-500">AI service connected</span>
-        </div>
-
-        <button aria-label="Help" className="hidden rounded-xl border border-slate-200 p-2.5 text-slate-500 transition hover:bg-slate-50 sm:block">
-          <CircleHelp size={17} />
-        </button>
-
-        <button aria-label="Notifications" className="relative rounded-xl border border-slate-200 p-2.5 text-slate-500 transition hover:bg-slate-50">
-          <Bell size={17} />
-          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-rose-400 ring-2 ring-white" />
-        </button>
-
+        <div className="hidden items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 md:flex"></div>
         <div className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-sky-200 to-emerald-200 text-[11px] font-extrabold text-ink">AD</div>
       </div>
     </header>

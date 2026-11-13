@@ -43,8 +43,6 @@ export default function RequestsPage({ requests, selectedId, selectRequest, onSt
             <Search size={15} className="shrink-0 text-slate-400" />
 
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name, ID, or message..." className="h-10 min-w-0 flex-1 bg-transparent text-[11px] outline-none placeholder:text-slate-400" />
-
-            <span className="hidden rounded bg-slate-100 px-1.5 py-1 text-[9px] font-bold text-slate-400 sm:inline">⌘ K</span>
           </div>
 
           <div className="mt-3 flex gap-1 overflow-x-auto pb-1">

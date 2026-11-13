@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import LoginInput from "../components/LoginInput";
+import LoginInput from "../pages/LoginInput";
+import { login } from "../data/AuthAPI";
 
 function LoginPage({ loginSuccess }) {
   async function onLogin({ email, password }) {
