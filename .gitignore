@@ -1,8 +1,28 @@
-.DS_Store
-.vscode/
-/refactor-backup/
-node_modules/
-dist/
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Env & secrets
 .env
 .env.*
 !.env.example
+
+# Data/model yang diunduh atau terlalu besar untuk git
+ai-service/data/lexicon/*.csv
+ai-service/models/indobert-intent/
+
+# Node
+node_modules
+
+# Frontend build
+/dist/
+
+ai-service/models/indobert-checkpoints/
+
+# Editor and local refactor files
+.DS_Store
+.vscode/
+/refactor-backup/

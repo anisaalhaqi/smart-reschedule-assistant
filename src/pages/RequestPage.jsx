@@ -5,14 +5,14 @@ import SectionHeading from "../components/SectionHeading";
 import RequestRow from "../components/RequestRow";
 import RequestDetail from "../components/RequestDetail";
 
-export default function RequestsPage({ requests, selectedId, selectRequest, onStatusChange, onDraftChange, onApproveSlot }) {
+export default function RequestsPage({ requests, selectedId, selectRequest, onStatusChange, onAnalyze }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("ALL");
 
   const filtered = useMemo(
     () =>
       requests.filter((request) => {
-        const matchesQuery = `${request.name} ${request.id} ${request.intent} ${request.message}`.toLowerCase().includes(query.toLowerCase());
+        const matchesQuery = `${request.name} ${request.id} ${request.message}`.toLowerCase().includes(query.toLowerCase());
 
         const matchesFilter = filter === "ALL" || request.status === filter;
 
@@ -21,18 +21,17 @@ export default function RequestsPage({ requests, selectedId, selectRequest, onSt
     [requests, query, filter],
   );
 
-  const selected = requests.find((request) => request.id === selectedId) || filtered[0] || null;
+  const selected = filtered.find((request) => request.id === selectedId) || filtered[0] || null;
 
   return (
     <div className="space-y-6">
       <SectionHeading
-        eyebrow="Customer care"
-        title="Reschedule requests"
-        description="Review each message, check the AI suggestion, then decide on the next step."
+        title="Permintaan perubahan jadwal"
+        description="Tinjau pesan customer, cek saran AI, lalu pilih keputusan."
         action={
           <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[10px] font-semibold text-muted">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            {requests.filter((request) => request.status === "PENDING").length} pending requests
+            {requests.filter((request) => request.status === "PENDING").length} menunggu keputusan
           </div>
         }
       />
@@ -42,7 +41,7 @@ export default function RequestsPage({ requests, selectedId, selectRequest, onSt
           <div className="flex items-center gap-2 rounded-xl border border-slate-200 px-3">
             <Search size={15} className="shrink-0 text-slate-400" />
 
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name, ID, or message..." className="h-10 min-w-0 flex-1 bg-transparent text-[11px] outline-none placeholder:text-slate-400" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari nama, ID, atau pesan…" className="h-10 min-w-0 flex-1 bg-transparent text-[11px] outline-none placeholder:text-slate-400" />
           </div>
 
           <div className="mt-3 flex gap-1 overflow-x-auto pb-1">
@@ -69,19 +68,19 @@ export default function RequestsPage({ requests, selectedId, selectRequest, onSt
               <div className="py-10 text-center">
                 <Search size={20} className="mx-auto text-slate-300" />
 
-                <p className="mt-2 text-xs font-bold text-ink">No requests found</p>
+                <p className="mt-2 text-xs font-bold text-ink">Permintaan belum ditemukan</p>
 
-                <p className="mt-1 text-[10px] text-muted">Try another keyword or filter.</p>
+                <p className="mt-1 text-[10px] text-muted">Coba kata kunci atau filter lain.</p>
               </div>
             )}
           </div>
 
           <p className="mt-4 border-t border-slate-100 pt-3 text-[10px] text-muted">
-            Showing {filtered.length} of {requests.length} requests
+            Menampilkan {filtered.length} dari {requests.length} permintaan
           </p>
         </section>
 
-        <div className="min-w-0">{selected ? <RequestDetail key={selected.id} request={selected} onStatusChange={onStatusChange} onDraftChange={onDraftChange} onApproveSlot={onApproveSlot} /> : <RequestDetail request={null} />}</div>
+        <div className="min-w-0">{selected ? <RequestDetail key={`${selected.id}-${selected.status}`} request={selected} onStatusChange={onStatusChange} onAnalyze={onAnalyze} /> : <RequestDetail request={null} />}</div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   createRescheduleRequest,
+  generateAiReview,
   getRescheduleRequests,
   getRescheduleRequestById,
   processRescheduleRequest,
@@ -20,6 +21,7 @@ router.post(
 );
 router.get('/', authenticateToken, getRescheduleRequests);
 router.get('/:id', authenticateToken, getRescheduleRequestById);
+router.post('/:id/ai-review', authenticateToken, authorizeRoles('ADMIN'), generateAiReview);
 router.patch(
   '/:id',
   authenticateToken,

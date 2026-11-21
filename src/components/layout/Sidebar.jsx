@@ -1,11 +1,11 @@
-import { CalendarDays, Inbox, LayoutDashboard, MoreHorizontal, Settings2, ShieldCheck, Sparkles, Users, X } from "lucide-react";
+import { CalendarDays, Inbox, LayoutDashboard, Settings2, ShieldCheck, Sparkles, Users, X } from "lucide-react";
 
 import Logo from "./Logo";
 
-export default function Sidebar({ page, setPage, open, setOpen }) {
+export default function Sidebar({ page, setPage, open, setOpen, pendingCount, name }) {
   const items = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
-    { id: "requests", label: "Reschedule requests", icon: Inbox, count: "3" },
+    { id: "requests", label: "Reschedule requests", icon: Inbox, count: pendingCount },
     { id: "schedule", label: "Schedule & slots", icon: CalendarDays },
   ];
 
@@ -40,7 +40,7 @@ export default function Sidebar({ page, setPage, open, setOpen }) {
 
               <span className="flex-1">{label}</span>
 
-              {count && <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${page === id ? "bg-white text-emerald-800" : "bg-slate-100 text-slate-500"}`}>{count}</span>}
+              {count > 0 && <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${page === id ? "bg-white text-emerald-800" : "bg-slate-100 text-slate-500"}`}>{count}</span>}
             </button>
           ))}
         </nav>
@@ -75,16 +75,15 @@ export default function Sidebar({ page, setPage, open, setOpen }) {
             </div>
           </div>
 
-          <button className="mt-4 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-slate-50">
-            <div className="grid h-9 w-9 place-items-center rounded-full bg-ink text-xs font-bold text-white">AD</div>
+          <div className="mt-4 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left">
+            <div className="grid h-9 w-9 place-items-center rounded-full bg-ink text-xs font-bold text-white">{name.slice(0, 2).toUpperCase()}</div>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-bold text-ink">Admin Gymnasyum</p>
+              <p className="truncate text-xs font-bold text-ink">{name}</p>
               <p className="mt-0.5 text-[10px] text-muted">Administrator</p>
             </div>
 
-            <MoreHorizontal size={17} className="text-slate-400" />
-          </button>
+          </div>
         </div>
       </aside>
     </>

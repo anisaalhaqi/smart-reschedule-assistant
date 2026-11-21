@@ -25,13 +25,7 @@ export default function RequestRow({ request, active, onClick }) {
 
       <p className="mt-3 line-clamp-2 text-[11px] leading-5 text-slate-600">“{request.message}”</p>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="rounded-md bg-white px-2 py-1 text-[9px] font-bold text-slate-600 ring-1 ring-slate-100">{request.intent}</span>
-
-          {request.review && <span className="rounded-md bg-orange-50 px-2 py-1 text-[9px] font-bold text-orange-700 ring-1 ring-orange-100">Review needed</span>}
-        </div>
-
+      <div className="mt-3 flex justify-end">
         <StatusBadge status={request.status} />
       </div>
     </button>

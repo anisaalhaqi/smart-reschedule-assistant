@@ -218,7 +218,7 @@ const getRescheduleRequestById = async ({ id, role, userId }) => {
   return result.rows[0];
 };
 
-const processRescheduleRequest = async ({ id, status }) => {
+const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
   let client;
   let transactionStarted = false;
 
@@ -293,6 +293,8 @@ const processRescheduleRequest = async ({ id, status }) => {
       );
     }
 
+    const targetSlotId = availableSlotId ?? request.available_slot_id;
+
     const slotResult = await client.query(
       `
         SELECT
@@ -305,7 +307,7 @@ const processRescheduleRequest = async ({ id, status }) => {
         WHERE id = $1
         FOR UPDATE
       `,
-      [request.available_slot_id]
+      [targetSlotId]
     );
 
     if (slotResult.rows.length === 0) {
@@ -333,7 +335,7 @@ const processRescheduleRequest = async ({ id, status }) => {
           AND id <> $2
         LIMIT 1
       `,
-      [request.available_slot_id, id]
+      [targetSlotId, id]
     );
 
     if (conflictResult.rows.length > 0) {
@@ -371,7 +373,7 @@ const processRescheduleRequest = async ({ id, status }) => {
         SET is_booked = TRUE
         WHERE id = $1
       `,
-      [request.available_slot_id]
+      [targetSlotId]
     );
 
     const updateResult = await client.query(
@@ -379,6 +381,7 @@ const processRescheduleRequest = async ({ id, status }) => {
         UPDATE reschedule_requests
         SET
           status = 'APPROVED',
+            available_slot_id = $2,
           updated_at = CURRENT_TIMESTAMP
         WHERE id = $1
         RETURNING
@@ -390,7 +393,7 @@ const processRescheduleRequest = async ({ id, status }) => {
           created_at,
           updated_at
       `,
-      [id]
+      [id, targetSlotId]
     );
 
     await client.query('COMMIT');

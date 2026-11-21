@@ -1,3 +1,4 @@
+const { buildAiReview } = require('../services/ai-review.service');
 const rescheduleRequestsService = require('../services/reschedule-requests.service');
 
 const createRescheduleRequest = async (req, res) => {
@@ -121,7 +122,7 @@ const getRescheduleRequestById = async (req, res) => {
 
 const processRescheduleRequest = async (req, res) => {
   const id = Number(req.params.id);
-  const { status } = req.body ?? {};
+  const { status, available_slot_id } = req.body ?? {};
 
   if (!Number.isSafeInteger(id) || id <= 0) {
     return res.status(400).json({
@@ -137,10 +138,17 @@ const processRescheduleRequest = async (req, res) => {
     });
   }
 
+  if (available_slot_id !== undefined && (
+    status !== 'APPROVED' || !Number.isSafeInteger(available_slot_id) || available_slot_id <= 0
+  )) {
+    return res.status(400).json({ status: 'error', message: 'Invalid approval slot' });
+  }
+
   try {
     const result = await rescheduleRequestsService.processRescheduleRequest({
       id,
       status,
+      availableSlotId: available_slot_id,
     });
 
     if (result.error) {
@@ -167,7 +175,31 @@ const processRescheduleRequest = async (req, res) => {
   }
 };
 
+const generateAiReview = async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    return res.status(400).json({ status: 'error', message: 'Invalid reschedule request ID' });
+  }
+
+  try {
+    const request = await rescheduleRequestsService.getRescheduleRequestById({
+      id,
+      role: req.user.role,
+      userId: req.user.id,
+    });
+    if (!request) {
+      return res.status(404).json({ status: 'error', message: 'Reschedule request not found' });
+    }
+
+    return res.json({ status: 'success', data: await buildAiReview(request) });
+  } catch (error) {
+    console.error('Failed to build AI review:', error.message);
+    return res.status(500).json({ status: 'error', message: 'Failed to build AI review' });
+  }
+};
+
 module.exports = {
+  generateAiReview,
   createRescheduleRequest,
   getRescheduleRequests,
   getRescheduleRequestById,

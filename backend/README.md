@@ -84,6 +84,7 @@ Seluruh endpoint menggunakan prefix `/api`.
 | GET | `/api/reschedule-requests` | Customer dan Admin | Melihat daftar permintaan sesuai hak akses |
 | GET | `/api/reschedule-requests/:id` | Customer dan Admin | Melihat detail permintaan sesuai hak akses |
 | PATCH | `/api/reschedule-requests/:id` | Admin | Menyetujui atau menolak permintaan |
+| POST | `/api/reschedule-requests/:id/ai-review` | Admin | Analisis pesan, baca slot alternatif, dan buat draft |
 
 ### 4.5 Health Check
 

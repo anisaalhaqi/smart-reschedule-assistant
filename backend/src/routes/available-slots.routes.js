@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('../config/database');
+const { getAvailableSlots } = require('../services/available-slots.service');
 
 const router = express.Router();
 
@@ -35,32 +35,12 @@ router.get('/', async (req, res) => {
   }
 
   try {
-    const query = `
-      SELECT
-        s.id,
-        TO_CHAR(s.slot_date, 'YYYY-MM-DD') AS slot_date,
-        s.start_time,
-        s.end_time,
-        s.is_booked,
-        s.created_at
-      FROM available_slots AS s
-      WHERE s.is_booked = FALSE
-        AND ($1::date IS NULL OR s.slot_date = $1::date)
-        AND NOT EXISTS (
-          SELECT 1
-          FROM reschedule_requests AS r
-          WHERE r.available_slot_id = s.id
-            AND r.status IN ('PENDING', 'APPROVED')
-        )
-      ORDER BY s.slot_date ASC, s.start_time ASC
-    `;
-
-    const result = await pool.query(query, [date ?? null]);
+    const availableSlots = await getAvailableSlots(date);
 
     return res.status(200).json({
       status: 'success',
       data: {
-        available_slots: result.rows,
+        available_slots: availableSlots,
       },
     });
   } catch (error) {

@@ -1,108 +1,171 @@
-import { useState } from "react";
-import { Check, X } from "lucide-react";
-
-import { initialRequests } from "./data/mockData";
-
+import { useEffect, useState } from "react";
+import { api, mapRequest } from "./data/rescheduleApi";
 import Sidebar from "./components/layout/Sidebar";
 import Topbar from "./components/layout/Topbar";
-
+import PlaceHolderPage from "./pages/PlaceHolderPage";
 import OverviewPage from "./pages/OverviewPage";
-import RequestsPage from "./pages/RequestPage";
 import SchedulePage from "./pages/SchedulePage";
-import PlaceholderPage from "./pages/PlaceHolderPage";
+import RequestsPage from "./pages/RequestPage";
+import CustomerReschedulePage from "./pages/CustomerReschedulePage";
 
 export default function App() {
-  const [page, setPage] = useState("overview");
+  const [session, setSession] = useState(null);
+  const [requests, setRequests] = useState([]);
+  const [page, setPage] = useState("requests");
+  const [selectedId, setSelectedId] = useState(null);
+  const [error, setError] = useState("");
+  const [registering, setRegistering] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [requests, setRequests] = useState(initialRequests);
-  const [selectedId, setSelectedId] = useState("RS-0251");
-  const [toast, setToast] = useState("");
+  const [loading, setLoading] = useState(false);
+  const token = session?.token;
 
-  const selectedPage = {
-    overview: ["Overview", "A quick overview of your reschedule operations."],
-    requests: ["Reschedule requests", "Review messages and approve the right schedule."],
-    schedule: ["Schedule & slots", "Manage sessions and review availability."],
-    team: ["Team & members", "Member management"],
-    settings: ["Settings", "Workspace preferences"],
-  }[page] || ["Overview", ""];
-
-  function showToast(message) {
-    setToast(message);
-
-    window.setTimeout(() => {
-      setToast("");
-    }, 2800);
+  async function loadRequests(signal) {
+    const data = await api("/reschedule-requests", { token, signal });
+    setRequests(data.reschedule_requests.map(mapRequest));
   }
 
-  function updateStatus(id, status) {
-    setRequests((current) => current.map((request) => (request.id === id ? { ...request, status } : request)));
+  useEffect(() => {
+    if (!token) return;
+    const controller = new AbortController();
+    loadRequests(controller.signal).catch((issue) => {
+      if (!controller.signal.aborted) setError(issue.message);
+    });
+    return () => controller.abort();
+  }, [token]);
 
-    showToast(`Request ${id} marked as ${status.toLowerCase()}. (Demo only)`);
+  async function authenticate(event) {
+    event.preventDefault();
+    const values = new FormData(event.currentTarget);
+    setError("");
+    setLoading(true);
+    try {
+      const email = values.get("email");
+      const password = values.get("password");
+      if (registering) {
+        await api("/auth/register", {
+          method: "POST",
+          body: { name: values.get("name"), email, password },
+        });
+        setRegistering(false);
+      }
+      setSession(await api("/auth/login", {
+        method: "POST",
+        body: { email, password },
+      }));
+    } catch (issue) {
+      setError(issue.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function updateDraft(id, draft) {
-    setRequests((current) => current.map((request) => (request.id === id ? { ...request, draft } : request)));
+  function logout() {
+    setSession(null);
+    setPage("requests");
+    setMobileNavOpen(false);
+    setRequests([]);
+    setSelectedId(null);
+    setError("");
   }
 
-  function approveSlot(id, slot) {
-    if (!slot) return;
+  async function updateStatus(id, status, slotId) {
+    await api(`/reschedule-requests/${id}`, {
+      token,
+      method: "PATCH",
+      body: { status, available_slot_id: slotId },
+    });
+    await loadRequests();
+  }
 
-    setRequests((current) =>
-      current.map((request) =>
-        request.id === id
-          ? {
-              ...request,
-              status: "APPROVED",
-              approvedSlot: slot,
-            }
-          : request,
-      ),
+  async function refreshRequests() {
+    setError("");
+    try {
+      await loadRequests();
+    } catch (issue) {
+      setError(issue.message);
+    }
+  }
+
+  if (!session) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-canvas p-4">
+        <form onSubmit={authenticate} className="w-full max-w-sm space-y-4 rounded-2xl bg-white p-6 shadow-soft">
+          <h1 className="text-xl font-extrabold">{registering ? "Daftar akun Gymnasyum" : "Gymnasyum"}</h1>
+          {registering && (
+            <label className="block">Nama
+              <input required name="name" autoComplete="name" maxLength={120} className="block w-full rounded-lg border p-2" />
+            </label>
+          )}
+          <label className="block">Email
+            <input required name="email" type="email" autoComplete="username" className="block w-full rounded-lg border p-2" />
+          </label>
+          <label className="block">Password
+            <input required name="password" type="password" autoComplete={registering ? "new-password" : "current-password"} minLength={registering ? 12 : undefined} maxLength={72} className="block w-full rounded-lg border p-2" />
+          </label>
+          {error && <p role="alert" className="text-rose-700">{error}</p>}
+          <button disabled={loading} className="rounded-lg bg-ink px-4 py-2 text-white disabled:opacity-40">{loading ? "Memproses…" : registering ? "Buat akun" : "Masuk"}</button>
+          <button type="button" disabled={loading} onClick={() => {
+            setRegistering(!registering);
+            setError("");
+          }} className="ml-3 text-sm font-semibold text-emerald-800">
+            {registering ? "Kembali ke login" : "Daftar sebagai customer"}
+          </button>
+        </form>
+      </main>
     );
-
-    showToast(`Slot ${slot.day} ${slot.time} selected. Demo state updated.`);
   }
+
+  if (session.user.role !== "ADMIN") {
+    return (
+      <div className="min-h-screen bg-canvas text-ink">
+        <Topbar title="Gymnasyum" name={session.user.name} onLogout={logout} />
+        <main className="space-y-4 p-5 sm:p-8">
+          {error && <p role="alert" className="text-rose-700">{error}</p>}
+          <CustomerReschedulePage token={token} requests={requests} onCreated={loadRequests} />
+        </main>
+      </div>
+    );
+  }
+
+  const title = {
+    overview: "Ringkasan",
+    requests: "Permintaan perubahan jadwal",
+    schedule: "Jadwal & slot",
+    team: "Team & members",
+    settings: "Settings",
+  }[page];
 
   return (
-    <div className="min-h-screen bg-canvas text-ink">
-      <div className="flex min-h-screen">
-        <Sidebar page={page} setPage={setPage} open={mobileNavOpen} setOpen={setMobileNavOpen} />
-
-        <div className="min-w-0 flex-1">
-          <Topbar title={selectedPage[0]} subtitle={selectedPage[1]} setOpen={setMobileNavOpen} />
-
-          <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-7 sm:py-8 xl:px-10">
-            {page === "overview" && <OverviewPage requests={requests} selectRequest={setSelectedId} setPage={setPage} />}
-
-            {page === "requests" && <RequestsPage requests={requests} selectedId={selectedId} selectRequest={setSelectedId} onStatusChange={updateStatus} onDraftChange={updateDraft} onApproveSlot={approveSlot} />}
-
-            {page === "schedule" && <SchedulePage requests={requests} />}
-
-            {["team", "settings"].includes(page) && <PlaceholderPage title={selectedPage[0]} />}
-
-            <footer className="mt-8 flex flex-col justify-between gap-2 border-t border-slate-200/70 pt-5 text-[10px] text-slate-400 sm:flex-row sm:items-center">
-              <p>© 2026 Gymnasyum · Smart Reschedule Assistant</p>
-            </footer>
-          </main>
-        </div>
+    <div className="flex min-h-screen bg-canvas text-ink">
+      <Sidebar
+        page={page}
+        setPage={setPage}
+        open={mobileNavOpen}
+        setOpen={setMobileNavOpen}
+        pendingCount={requests.filter((request) => request.status === "PENDING").length}
+        name={session.user.name}
+      />
+      <div className="min-w-0 flex-1">
+        <Topbar title={title} name={session.user.name} onLogout={logout} setOpen={setMobileNavOpen} />
+        <main className="mx-auto max-w-[1600px] space-y-4 px-4 py-6 sm:px-7 xl:px-10">
+          {error && <p role="alert" className="text-rose-700">{error}</p>}
+          {page === "overview" && <OverviewPage requests={requests} selectRequest={setSelectedId} setPage={setPage} />}
+          {page === "schedule" && <SchedulePage token={token} />}
+          {page === "requests" && (
+            <>
+              <button onClick={refreshRequests} className="rounded-lg border bg-white px-3 py-2 text-xs">Muat ulang permintaan</button>
+              <RequestsPage
+                requests={requests}
+                selectedId={selectedId}
+                selectRequest={setSelectedId}
+                onStatusChange={updateStatus}
+                onAnalyze={(id) => api(`/reschedule-requests/${id}/ai-review`, { token, method: "POST" })}
+              />
+            </>
+          )}
+          {["team", "settings"].includes(page) && <PlaceHolderPage title={title} />}
+        </main>
       </div>
-
-      {toast && (
-        <div role="status" className="fixed bottom-5 right-5 z-50 flex max-w-sm items-start gap-3 rounded-2xl border border-emerald-100 bg-white px-4 py-3 shadow-xl">
-          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
-            <Check size={16} />
-          </div>
-
-          <div>
-            <p className="text-xs font-bold text-ink">Action completed</p>
-
-            <p className="mt-1 text-[10px] leading-4 text-muted">{toast}</p>
-          </div>
-
-          <button aria-label="Dismiss" onClick={() => setToast("")} className="ml-1 text-slate-400">
-            <X size={14} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
