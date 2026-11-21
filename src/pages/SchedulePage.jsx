@@ -1,120 +1,320 @@
-import { useState } from "react";
-
-import { CalendarDays, ChevronDown, CircleHelp, Clock3, Inbox } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  CalendarDays,
+  ChevronDown,
+  Clock3,
+  Inbox,
+  CircleHelp,
+} from "lucide-react";
 
 import SectionHeading from "../components/SectionHeading";
 import StatCard from "../components/StatusCard";
 
-export default function SchedulePage({ requests }) {
-  const [day, setDay] = useState("Saturday");
+const WEEKDAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
-  const schedule = [
-    {
-      time: "08:00 – 09:00",
-      title: "Personal Training",
-      coach: "Coach Dimas",
-      member: "Ibu Ratna Wijaya",
-      status: "Booked",
+function formatDate(dateString) {
+  if (!dateString) return "-";
+
+  return new Date(`${String(dateString).slice(0, 10)}T00:00:00`)
+    .toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+}
+
+function formatTime(time) {
+  return time ? String(time).slice(0, 5) : "-";
+}
+
+function formatWeekRange(dates) {
+  if (!dates.length) return "No schedule data";
+
+  const sorted = [...dates].sort();
+  return `${formatDate(sorted[0])} – ${formatDate(sorted[sorted.length - 1])}`;
+}
+
+function getStatus(status) {
+  if (status === "SCHEDULED") {
+    return {
+      label: "Scheduled",
       color: "border-l-sky-400",
-    },
-    {
-      time: "09:00 – 10:00",
-      title: "Personal Training",
-      coach: "Coach Dimas",
-      member: "Available slot",
-      status: "Available",
-      color: "border-l-emerald-400",
-    },
-    {
-      time: "10:00 – 11:00",
-      title: "Strength Training",
-      coach: "Coach Raka",
-      member: "Available slot",
-      status: "Available",
-      color: "border-l-emerald-400",
-    },
-    {
-      time: "13:00 – 14:00",
-      title: "Yoga Flow",
-      coach: "Coach Sarah",
-      member: "Class · 6 members",
-      status: "Booked",
+      badge: "bg-sky-50 text-sky-700",
+    };
+  }
+
+  if (status === "RESCHEDULED") {
+    return {
+      label: "Rescheduled",
       color: "border-l-violet-400",
-    },
-    {
-      time: "15:00 – 16:00",
-      title: "Personal Training",
-      coach: "Coach Dimas",
-      member: "Bapak Surya Adinata",
-      status: "Booked",
-      color: "border-l-sky-400",
-    },
-  ];
+      badge: "bg-violet-50 text-violet-700",
+    };
+  }
+
+  return {
+    label: status || "Unknown",
+    color: "border-l-slate-300",
+    badge: "bg-slate-100 text-slate-600",
+  };
+}
+
+export default function SchedulePage({
+  schedules = [],
+  requests = [],
+  availableSlots = [],
+  loadingSlots = false,
+  slotError = "",
+  onRetrySlots,
+}) {
+  const [day, setDay] = useState("All");
+
+  const filteredSchedules = useMemo(() => {
+    return schedules
+      .filter((item) => {
+        if (day === "All") return true;
+
+        const date = new Date(`${item.schedule_date}T00:00:00`);
+        return WEEKDAYS[date.getDay()] === day;
+      })
+      .sort((a, b) => {
+        const dateCompare = a.schedule_date.localeCompare(b.schedule_date);
+        return dateCompare || a.start_time.localeCompare(b.start_time);
+      });
+  }, [schedules, day]);
+
+  const filteredSlots = useMemo(() => {
+    return availableSlots
+      .filter((slot) => !slot.is_booked)
+      .filter((slot) => {
+        if (day === "All") return true;
+
+        const date = new Date(
+          `${String(slot.slot_date).slice(0, 10)}T00:00:00`
+        );
+
+        return WEEKDAYS[date.getDay()] === day;
+      })
+      .sort((a, b) => {
+        const dateA = String(a.slot_date).slice(0, 10);
+        const dateB = String(b.slot_date).slice(0, 10);
+        const dateCompare = dateA.localeCompare(dateB);
+
+        return (
+          dateCompare ||
+          String(a.start_time).localeCompare(String(b.start_time))
+        );
+      });
+  }, [availableSlots, day]);
+
+  const scheduleDates = schedules.map((item) => item.schedule_date);
+  const slotDates = availableSlots.map((item) =>
+    String(item.slot_date).slice(0, 10)
+  );
+
+  const allDates = [...scheduleDates, ...slotDates];
+
+  const scheduledCount = schedules.filter(
+    (item) => item.status === "SCHEDULED"
+  ).length;
+
+  const rescheduledCount = schedules.filter(
+    (item) => item.status === "RESCHEDULED"
+  ).length;
+
+  const pendingCount = requests.filter(
+    (item) => item.status === "PENDING"
+  ).length;
+
+  const availableCount = availableSlots.filter(
+    (item) => !item.is_booked
+  ).length;
 
   return (
     <div className="space-y-6">
-      <SectionHeading
-        eyebrow="Availability"
-        title="Schedule & slots"
-        description="Check existing sessions and possible alternatives before approving a request."
-        action={
-          <button className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2.5 text-xs font-bold text-white">
-            <CalendarDays size={14} />
-            This week
-            <ChevronDown size={13} />
-          </button>
-        }
-      />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <SectionHeading
+          title="Weekly availability"
+          description="Monitor customer schedules and available training slots."
+        />
 
-      <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-soft sm:p-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-muted">
+          <CalendarDays size={15} />
+          <span>Database schedules</span>
+          <ChevronDown size={14} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label="Scheduled sessions"
+          value={scheduledCount}
+          icon={CalendarDays}
+          tone="blue"
+        />
+        <StatCard
+          label="Rescheduled sessions"
+          value={rescheduledCount}
+          icon={Clock3}
+          tone="violet"
+        />
+        <StatCard
+          label="Available slots"
+          value={availableCount}
+          icon={Inbox}
+          tone="green"
+        />
+        <StatCard
+          label="Requests pending"
+          value={pendingCount}
+          icon={CircleHelp}
+          tone="amber"
+        />
+      </div>
+
+      <section className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm sm:p-6">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="text-sm font-extrabold text-ink">Weekly availability</h3>
-
-            <p className="mt-1 text-[10px] text-muted">October 20 – 26, 2026 · Demo data</p>
+            <h3 className="text-sm font-bold text-ink">
+              Schedule overview
+            </h3>
+            <p className="mt-1 text-xs text-muted">
+              {formatWeekRange(allDates)}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
-              <button key={d} onClick={() => setDay(d)} className={`rounded-lg px-2.5 py-2 text-[10px] font-bold ${day === d ? "bg-ink text-white" : "bg-slate-50 text-slate-500 hover:bg-slate-100"}`}>
-                {d.slice(0, 3)}
+            {["All", ...WEEKDAYS.slice(1), WEEKDAYS[0]].map((item) => (
+              <button
+                key={item}
+                onClick={() => setDay(item)}
+                className={`rounded-lg px-3 py-2 text-[11px] font-semibold transition ${
+                  day === item
+                    ? "bg-ink text-white"
+                    : "bg-slate-50 text-muted hover:bg-slate-100"
+                }`}
+              >
+                {item}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="mt-6 space-y-2">
-          {schedule.map((item) => (
-            <div key={item.time} className={`flex flex-col gap-2 rounded-xl border border-slate-100 border-l-[3px] ${item.color} p-3 sm:flex-row sm:items-center sm:gap-4`}>
-              <span className="w-28 text-[10px] font-bold text-muted">{item.time}</span>
+        <div className="space-y-3">
+          {filteredSchedules.map((item) => {
+            const status = getStatus(item.status);
 
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-ink">{item.title}</p>
+            return (
+              <div
+                key={`schedule-${item.id}`}
+                className={`flex flex-col gap-3 rounded-xl border border-slate-100 border-l-4 ${status.color} bg-slate-50/60 p-4 sm:flex-row sm:items-center sm:justify-between`}
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-bold text-ink">
+                    {formatTime(item.start_time)} – {formatTime(item.end_time)}
+                  </span>
+                  <span className="text-sm font-semibold text-ink">
+                    {item.class_name}
+                  </span>
+                  <span className="text-xs text-muted">
+                    {item.customer_name || "Customer"}
+                  </span>
+                  <span className="text-[11px] text-muted">
+                    {formatDate(item.schedule_date)}
+                  </span>
+                </div>
 
-                <p className="mt-1 text-[10px] text-muted">
-                  {item.coach} · {item.member}
-                </p>
+                <span
+                  className={`w-fit rounded-full px-3 py-1 text-[10px] font-bold ${status.badge}`}
+                >
+                  {status.label}
+                </span>
               </div>
+            );
+          })}
 
-              <span className={`self-start rounded-md px-2 py-1 text-[9px] font-bold sm:self-auto ${item.status === "Available" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>{item.status}</span>
+          {filteredSchedules.length === 0 && (
+            <div className="rounded-xl border border-dashed border-slate-200 py-8 text-center text-xs text-muted">
+              No schedules found for this day.
             </div>
-          ))}
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm sm:p-6">
+        <div className="mb-5">
+          <h3 className="text-sm font-bold text-ink">
+            Available training slots
+          </h3>
+          <p className="mt-1 text-xs text-muted">
+            Open time slots retrieved from the backend database.
+          </p>
         </div>
 
-        <div className="mt-5 flex items-start gap-2 rounded-xl bg-sky-50 p-3 text-[10px] leading-5 text-sky-900">
-          <CircleHelp size={14} className="mt-0.5 shrink-0" />
+        {loadingSlots ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-xs text-muted">
+            <Clock3 size={16} className="animate-spin" />
+            Loading available slots...
+          </div>
+        ) : slotError ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700">
+            {slotError}
+            {onRetrySlots && (
+              <button
+                onClick={onRetrySlots}
+                className="ml-2 font-bold underline"
+              >
+                Retry
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredSlots.map((slot) => (
+              <div
+                key={`slot-${slot.id}`}
+                className="flex flex-col gap-3 rounded-xl border border-slate-100 border-l-4 border-l-emerald-400 bg-emerald-50/30 p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-bold text-ink">
+                    {formatTime(slot.start_time)} – {formatTime(slot.end_time)}
+                  </span>
+                  <span className="text-sm font-semibold text-ink">
+                    Available training slot
+                  </span>
+                  <span className="text-xs text-muted">
+                    {formatDate(String(slot.slot_date).slice(0, 10))}
+                  </span>
+                </div>
 
-          <p>Slot yang ditampilkan merupakan contoh untuk desain frontend. Ketersediaan aktual nantinya harus berasal dari backend.</p>
-        </div>
-      </div>
+                <span className="w-fit rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold text-emerald-700">
+                  Available
+                </span>
+              </div>
+            ))}
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <StatCard label="Scheduled sessions" value="18" detail="This week" icon={CalendarDays} tone="sky" />
+            {filteredSlots.length === 0 && (
+              <div className="rounded-xl border border-dashed border-slate-200 py-8 text-center text-xs text-muted">
+                No available slots found for this day.
+              </div>
+            )}
+          </div>
+        )}
+      </section>
 
-        <StatCard label="Available slots" value="7" detail="Across all coaches" icon={Clock3} tone="mint" />
-
-        <StatCard label="Requests pending" value={requests.filter((request) => request.status === "PENDING").length} detail="Need approval" icon={Inbox} tone="amber" />
-      </div>
+      <p className="text-[11px] leading-5 text-muted">
+        Schedule and availability information is loaded from the backend.
+        Available slots are displayed separately from customer schedules.
+      </p>
     </div>
   );
 }
+

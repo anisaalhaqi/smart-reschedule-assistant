@@ -26,3 +26,90 @@ button { cursor: pointer; }
     overflow: hidden;
   }
 }
+
+/* Authentication Pages */
+.login-page,
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: #f6fafa;
+}
+
+.login-page h2,
+.register-page h2 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: #183b3a;
+  margin-bottom: 28px;
+}
+
+.login-input,
+.register-input {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #e5efeb;
+  border-radius: 20px;
+  box-shadow: 0 10px 32px rgba(28, 69, 65, 0.06);
+}
+
+.login-input input,
+.register-input input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #dce8e3;
+  border-radius: 10px;
+  outline: none;
+  color: #183b3a;
+  background: #ffffff;
+}
+
+.login-input input:focus,
+.register-input input:focus {
+  border-color: #70b99a;
+  box-shadow: 0 0 0 3px rgba(112, 185, 154, 0.15);
+}
+
+.login-input button,
+.register-input button {
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #183b3a;
+  color: white;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+
+.login-input button:hover,
+.register-input button:hover {
+  background: #285b52;
+}
+
+.login-page > p,
+.register-page > p {
+  margin-top: 20px;
+  color: #718783;
+  font-size: 14px;
+}
+
+.login-page a,
+.register-page a {
+  color: #267b61;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-page a:hover,
+.register-page a:hover {
+  text-decoration: underline;
+}
