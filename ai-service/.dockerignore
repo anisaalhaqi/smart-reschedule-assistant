@@ -1,0 +1,10 @@
+.venv
+venv
+__pycache__
+.pytest_cache
+.env
+tests
+reports
+data/processed
+data/synthetic_messages.csv
+models/indobert-intent

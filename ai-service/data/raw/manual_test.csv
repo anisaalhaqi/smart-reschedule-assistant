@@ -1,0 +1,101 @@
+id,message_text,intent
+man-001,"Besok sore nggak bisa, pindah Sabtu pagi dong",RESCHEDULE
+man-002,"kak maaf bgt sesi rabu aku majuin ke selasa bisa? rabu mau nganter mama kontrol",RESCHEDULE
+man-003,"Bu Ratna izin ganti jadwal yoga ya kak, yang Kamis jadi Jumat sore saja",RESCHEDULE
+man-004,"min, coach dimas hari ini aku ga dapet ijin kantor. ada slot pengganti jumat malem?",RESCHEDULE
+man-005,"Selamat siang. Mohon dijadwalkan ulang sesi pilates saya yang tanggal 14 ke tanggal 16, terima kasih.",RESCHEDULE
+man-006,"kk sesi PT nya bisa diundur 1 jam ga? jadi jam 9",RESCHEDULE
+man-007,"lusa aku keluar kota, sesinya ganti minggu depan aja ya kak",RESCHEDULE
+man-008,"pagi kak, saya telat bangun hehe, latihan jam 7 bisa digeser jam 10?",RESCHEDULE
+man-009,"Kak boleh tukar jadwal senam lansia saya dari Senin ke Rabu? Senin cucu saya lahiran",RESCHEDULE
+man-010,"halo ka, aku mau reschedule yg sabtu besok ke minggu sore bisa kah",RESCHEDULE
+man-011,"Pak Hendra mau pindah slot kak, jangan kamis, kalau bisa selasa jam 4",RESCHEDULE
+man-012,"kelas zumba jumat ga bisa ikut, ada kelas yg sama hari sabtu ga? mau pindah ke situ",RESCHEDULE
+man-013,"Kak, maaf ya saya mendadak lembur. Sesi nanti malam bisa diganti besok malam?",RESCHEDULE
+man-014,"minta tolong jadwal coaching saya dimundurin seminggu ya kak",RESCHEDULE
+man-015,"ka aku ganti hari ya, yg tadinya selasa jadi kamis jam yg sama",RESCHEDULE
+man-016,"Mbak, kalau sesi besok diubah jadi siang bisa? pagi saya harus ke bank",RESCHEDULE
+man-017,"rescheduling ya kak sesi tgl 20, aku maunya tgl 22 jam 8 pagi",RESCHEDULE
+man-018,"Ibu Wati mohon sesi pribadinya digeser ke minggu depan hari yang sama, terima kasih",RESCHEDULE
+man-019,"kak aku dah booking kamis tp ternyata ada rapat, bisa dioper ke jumat pagi?",RESCHEDULE
+man-020,"kak sorry bgt nih, yg tgl 5 bs pindah ke tgl 7 ga? jam nya bebas",RESCHEDULE
+man-021,"Kak, sesi Kamis saya batalkan dulu ya, lagi kurang sehat",CANCELLATION
+man-022,"min aku ga jadi ikut kelas besok ya, maaf mendadak",CANCELLATION
+man-023,"Selamat malam, saya Bu Lestari ingin membatalkan sesi personal training hari Sabtu. Terima kasih.",CANCELLATION
+man-024,"kak tolong hapus booking yoga aku yg jumat",CANCELLATION
+man-025,"Sesi minggu ini saya ga ikut dulu kak, kaki keseleo. Nanti saya kabarin kalau udah pulih",CANCELLATION
+man-026,"kakk cancel ya sesi nanti sore, anakku demam",CANCELLATION
+man-027,"Mohon maaf kak, jadwal senam Rabu saya batal, tidak perlu dicarikan pengganti",CANCELLATION
+man-028,"min booking sesi PT tgl 18 dicancel aja",CANCELLATION
+man-029,"Maaf kak, sementara saya berhenti dulu latihannya. Sesi yang sudah dijadwalkan dibatalkan saja",CANCELLATION
+man-030,"halo kak, besok saya absen ya. ada acara sekolah anak",CANCELLATION
+man-031,"kak ga usah dijadwalin ulang ya, sesi selasa batalin aja",CANCELLATION
+man-032,"kak sesi pilates sabtu ini ku-cancel yaa, maaf bgt",CANCELLATION
+man-033,"Pak Joko tidak bisa hadir latihan hari ini karena sakit gigi, mohon dibatalkan",CANCELLATION
+man-034,"min sesi besok pagi off dulu ya, aku lagi di RS nemenin bapak",CANCELLATION
+man-035,"Kak sesi nanti jam 5 nggak jadi ya, maaf banget",CANCELLATION
+man-036,"Saya batalkan seluruh sesi bulan November ya kak, mau pulang kampung",CANCELLATION
+man-037,"kak, aku izin ga dateng kelas zumba kamis",CANCELLATION
+man-038,"maaf kak kayaknya aku skip sesi besok, belum enak badan",CANCELLATION
+man-039,"Kak, bookingan saya yg hari Minggu tolong dibatalkan ya",CANCELLATION
+man-040,"cancel kelas body combat jumat ya min, makasih",CANCELLATION
+man-041,"Sabtu pagi coach-nya ada slot kosong nggak kak?",SCHEDULE_INQUIRY
+man-042,"kak jadwal kelas yoga minggu depan udah keluar belum?",SCHEDULE_INQUIRY
+man-043,"min besok masih ada slot PT jam 7 pagi?",SCHEDULE_INQUIRY
+man-044,"Selamat pagi, saya mau tanya jam berapa saja kelas senam lansia hari Rabu?",SCHEDULE_INQUIRY
+man-045,"kak aku lupa sesi aku berikutnya kapan ya",SCHEDULE_INQUIRY
+man-046,"coach Rina kosong hari apa aja kak minggu ini?",SCHEDULE_INQUIRY
+man-047,"kak kalau sore2 gitu yg masih longgar hari apa ya",SCHEDULE_INQUIRY
+man-048,"Mbak, pilates hari Jumat malam masih tersedia tempat?",SCHEDULE_INQUIRY
+man-049,"kak jadwal saya hari ini jam berapa? takut salah inget",SCHEDULE_INQUIRY
+man-050,"min tanggal 25 ada kelas apa aja?",SCHEDULE_INQUIRY
+man-051,"Halo kak, Senin depan ada slot siang untuk private coaching?",SCHEDULE_INQUIRY
+man-052,"kak hari minggu gym ada kelas ga? atau libur",SCHEDULE_INQUIRY
+man-053,"kak slot jam 6 pagi biasanya penuh ga sih",SCHEDULE_INQUIRY
+man-054,"Kak boleh minta list jadwal zumba bulan depan?",SCHEDULE_INQUIRY
+man-055,"ka besok coach dimas ada jadwal kosong ga",SCHEDULE_INQUIRY
+man-056,"Kak, untuk kelas aerobik Kamis mulai pukul berapa ya?",SCHEDULE_INQUIRY
+man-057,"min nanti malem masih bisa booking sesi ga",SCHEDULE_INQUIRY
+man-058,"kak sesi aku yg kemarin dipindah itu jadinya hari apa ya?",SCHEDULE_INQUIRY
+man-059,"Bu Mira mau tanya, minggu ini jadwal latihan saya ada berapa kali ya kak?",SCHEDULE_INQUIRY
+man-060,"kak lusa sore ada yg kosong?",SCHEDULE_INQUIRY
+man-061,"Oke kak, Sabtu jam 8 aja ya, makasih",CONFIRMATION
+man-062,"siap kak besok aku dateng",CONFIRMATION
+man-063,"Baik kak, saya terima jadwal barunya hari Jumat pukul 16.00. Terima kasih.",CONFIRMATION
+man-064,"okeee kak noted 👍",CONFIRMATION
+man-065,"iya kak aku ambil yg jam 10",CONFIRMATION
+man-066,"Sip kak, berarti Selasa jam 7 malam ya. Sampai ketemu",CONFIRMATION
+man-067,"kak aku jadi dateng ya nanti sore",CONFIRMATION
+man-068,"Iya benar kak, jadwal saya tetap Kamis pagi",CONFIRMATION
+man-069,"oke deh kak setuju sama slot yang ditawarin",CONFIRMATION
+man-070,"Baik, saya konfirmasi hadir sesi PT besok jam 9. Terima kasih kak",CONFIRMATION
+man-071,"siap min, yg minggu sore aku ambil",CONFIRMATION
+man-072,"iya kak gpp, jam 3 juga bisa kok",CONFIRMATION
+man-073,"oke makasih kak udah dibantu pindahin, sampai jumpa rabu",CONFIRMATION
+man-074,"Kak, saya sudah lihat jadwalnya, aman ya. Saya hadir",CONFIRMATION
+man-075,"deal kak, sabtu jam 9",CONFIRMATION
+man-076,"ok kak, sesuai jadwal ya besok",CONFIRMATION
+man-077,"Siap kak terima kasih infonya, saya datang besok pagi",CONFIRMATION
+man-078,"boleh kak yg slot pertama aja",CONFIRMATION
+man-079,"Iya kak saya setuju dipindah ke hari Senin",CONFIRMATION
+man-080,"sip sip kak",CONFIRMATION
+man-081,"Kak, paket private coaching berapa ya?",OTHER
+man-082,"kak member bulanan sekarang harganya brp",OTHER
+man-083,"Halo kak selamat pagi",OTHER
+man-084,"kak ada promo akhir tahun ga",OTHER
+man-085,"Kak, toilet wanita lantai 2 airnya mati",OTHER
+man-086,"min aku mau upgrade ke member gold gimana caranya",OTHER
+man-087,"Kak, bisa minta kuitansi pembayaran bulan lalu?",OTHER
+man-088,"kak di sana ada kolam renang ga",OTHER
+man-089,"Terima kasih ya kak coachnya sabar banget",OTHER
+man-090,"kak botol minum aku ketinggalan di studio 2",OTHER
+man-091,"min nomor rekening buat bayar apa ya",OTHER
+man-092,"Kak, apakah ada program khusus untuk ibu hamil?",OTHER
+man-093,"kak treadmill nomor 3 bunyi terus, tolong dicek",OTHER
+man-094,"kak saya mau ganti email akun member",OTHER
+man-095,"Kak boleh parkir motor di depan?",OTHER
+man-096,"kak bisa beli voucher buat hadiah ultah?",OTHER
+man-097,"halo, ini gymnasyum ya?",OTHER
+man-098,"Kak saya mau kasih masukan, musik di ruang yoga terlalu kencang",OTHER
+man-099,"min trial gratis ada ga buat teman saya",OTHER
+man-100,"kak coach Bayu bisa bikinin program buat turun berat badan ga",OTHER

@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Env & secrets
+.env
+
+# Data/model yang diunduh atau terlalu besar untuk git
+ai-service/data/lexicon/*.csv
+ai-service/models/indobert-intent/
+
+# Node
+node_modules/
