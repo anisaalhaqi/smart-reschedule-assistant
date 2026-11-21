@@ -1,4 +1,8 @@
 .DS_Store
 .vscode/
-# Local backup for backend refactoring
 /refactor-backup/
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
