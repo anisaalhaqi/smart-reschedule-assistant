@@ -2,13 +2,20 @@ require('dotenv').config();
 
 const express = require('express');
 const pool = require('./config/database');
+const cors = require('cors');
 
 const authRouter = require('./routes/auth.routes');
 const schedulesRouter = require('./routes/schedules.routes');
 const rescheduleRequestsRouter = require('./routes/reschedule-requests.routes');
 const availableSlotsRouter = require('./routes/available-slots.routes');
+const usersRouter = require('./routes/users.routes');
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+}));
+
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -19,6 +26,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/schedules', schedulesRouter);
 app.use('/api/reschedule-requests', rescheduleRequestsRouter);
 app.use('/api/available-slots', availableSlotsRouter);
+app.use('/api/users', usersRouter);
 
 // Root endpoint
 app.get('/', (req, res) => {

@@ -1,108 +1,137 @@
-import { useState } from "react";
-import { Check, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 
-import { initialRequests } from "./data/mockData";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage";
+import CustomerDashboard from "./pages/CustomerDashboard";
 
-import Sidebar from "./components/layout/Sidebar";
-import Topbar from "./components/layout/Topbar";
+import { logout, getToken } from "./data/AuthAPI";
 
-import OverviewPage from "./pages/OverviewPage";
-import RequestsPage from "./pages/RequestPage";
-import SchedulePage from "./pages/SchedulePage";
-import PlaceholderPage from "./pages/PlaceHolderPage";
+const API_BASE_URL = "http://localhost:3000/api";
 
-export default function App() {
-  const [page, setPage] = useState("overview");
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [requests, setRequests] = useState(initialRequests);
-  const [selectedId, setSelectedId] = useState("RS-0251");
-  const [toast, setToast] = useState("");
+function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const selectedPage = {
-    overview: ["Overview", "A quick overview of your reschedule operations."],
-    requests: ["Reschedule requests", "Review messages and approve the right schedule."],
-    schedule: ["Schedule & slots", "Manage sessions and review availability."],
-    team: ["Team & members", "Member management"],
-    settings: ["Settings", "Workspace preferences"],
-  }[page] || ["Overview", ""];
+  useEffect(() => {
+    async function checkSession() {
+      const token = getToken();
 
-  function showToast(message) {
-    setToast(message);
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
-    window.setTimeout(() => {
-      setToast("");
-    }, 2800);
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          logout();
+          setUser(null);
+        } else {
+          setUser(result.data.user);
+        }
+      } catch (error) {
+        console.error("Session verification failed:", error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    checkSession();
+  }, []);
+
+  function handleLogin(data) {
+    setUser(data.user);
+    navigate("/dashboard");
   }
 
-  function updateStatus(id, status) {
-    setRequests((current) => current.map((request) => (request.id === id ? { ...request, status } : request)));
-
-    showToast(`Request ${id} marked as ${status.toLowerCase()}. (Demo only)`);
+  function handleLogout() {
+    logout();
+    setUser(null);
+    navigate("/", { replace: true });
   }
 
-  function updateDraft(id, draft) {
-    setRequests((current) => current.map((request) => (request.id === id ? { ...request, draft } : request)));
+  if (loading) {
+    return <p className="p-6">Memeriksa sesi login...</p>;
   }
 
-  function approveSlot(id, slot) {
-    if (!slot) return;
+  function renderDashboard() {
+    if (!user) {
+      return <Navigate to="/" replace />;
+    }
 
-    setRequests((current) =>
-      current.map((request) =>
-        request.id === id
-          ? {
-              ...request,
-              status: "APPROVED",
-              approvedSlot: slot,
-            }
-          : request,
-      ),
-    );
+    if (user.role === "ADMIN") {
+      return (
+        <DashboardPage
+          user={user}
+          onLogout={handleLogout}
+        />
+      );
+    }
 
-    showToast(`Slot ${slot.day} ${slot.time} selected. Demo state updated.`);
+    if (user.role === "CUSTOMER") {
+      return (
+        <CustomerDashboard
+          user={user}
+          onLogout={handleLogout}
+        />
+      );
+    }
+
+    return <Navigate to="/" replace />;
   }
 
   return (
-    <div className="min-h-screen bg-canvas text-ink">
-      <div className="flex min-h-screen">
-        <Sidebar page={page} setPage={setPage} open={mobileNavOpen} setOpen={setMobileNavOpen} />
+    <Routes>
+      <Route
+        path="/"
+        element={
+          user ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <LoginPage loginSuccess={handleLogin} />
+          )
+        }
+      />
 
-        <div className="min-w-0 flex-1">
-          <Topbar title={selectedPage[0]} subtitle={selectedPage[1]} setOpen={setMobileNavOpen} />
+      <Route
+        path="/register"
+        element={
+          user ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <RegisterPage />
+          )
+        }
+      />
 
-          <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-7 sm:py-8 xl:px-10">
-            {page === "overview" && <OverviewPage requests={requests} selectRequest={setSelectedId} setPage={setPage} />}
+      <Route
+        path="/dashboard"
+        element={renderDashboard()}
+      />
 
-            {page === "requests" && <RequestsPage requests={requests} selectedId={selectedId} selectRequest={setSelectedId} onStatusChange={updateStatus} onDraftChange={updateDraft} onApproveSlot={approveSlot} />}
-
-            {page === "schedule" && <SchedulePage requests={requests} />}
-
-            {["team", "settings"].includes(page) && <PlaceholderPage title={selectedPage[0]} />}
-
-            <footer className="mt-8 flex flex-col justify-between gap-2 border-t border-slate-200/70 pt-5 text-[10px] text-slate-400 sm:flex-row sm:items-center">
-              <p>© 2026 Gymnasyum · Smart Reschedule Assistant</p>
-            </footer>
-          </main>
-        </div>
-      </div>
-
-      {toast && (
-        <div role="status" className="fixed bottom-5 right-5 z-50 flex max-w-sm items-start gap-3 rounded-2xl border border-emerald-100 bg-white px-4 py-3 shadow-xl">
-          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
-            <Check size={16} />
-          </div>
-
-          <div>
-            <p className="text-xs font-bold text-ink">Action completed</p>
-
-            <p className="mt-1 text-[10px] leading-4 text-muted">{toast}</p>
-          </div>
-
-          <button aria-label="Dismiss" onClick={() => setToast("")} className="ml-1 text-slate-400">
-            <X size={14} />
-          </button>
-        </div>
-      )}
-    </div>
+      <Route
+        path="*"
+        element={<Navigate to={user ? "/dashboard" : "/"} replace />}
+      />
+    </Routes>
   );
 }
+
+export default App;
+

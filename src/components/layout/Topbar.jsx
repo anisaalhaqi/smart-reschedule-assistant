@@ -1,24 +1,49 @@
 import { Bell, CircleHelp, Menu } from "lucide-react";
 
-export default function Topbar({ title, subtitle, setOpen }) {
+export default function Topbar({ title, subtitle, setOpen, user }) {
+  const initials = (user?.name || "Admin")
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
     <header className="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-slate-100/90 bg-white/90 px-4 backdrop-blur-xl sm:px-7 xl:px-10">
       <div className="flex items-center gap-3">
-        <button onClick={() => setOpen(true)} className="rounded-xl border border-slate-200 p-2 text-slate-500 lg:hidden">
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Open navigation"
+          className="rounded-xl border border-slate-200 p-2 text-slate-500 lg:hidden"
+        >
           <Menu size={18} />
         </button>
 
         <div>
-          <h1 className="font-display text-[17px] font-extrabold tracking-tight text-ink sm:text-[19px]">{title}</h1>
-
-          <p className="mt-0.5 hidden text-[11px] text-muted sm:block">{subtitle}</p>
+          <h1 className="font-display text-[17px] font-extrabold tracking-tight text-ink sm:text-[19px]">
+            {title}
+          </h1>
+          <p className="mt-0.5 hidden text-[11px] text-muted sm:block">
+            {subtitle}
+          </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="hidden items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 md:flex"></div>
-        <div className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-sky-200 to-emerald-200 text-[11px] font-extrabold text-ink">AD</div>
+        <div className="hidden items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 md:flex">
+          <span className="text-xs font-semibold text-ink">
+            {user?.name || "Admin Gymnasyum"}
+          </span>
+        </div>
+
+        <div
+          title={user?.name || "Admin"}
+          className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-sky-200 to-emerald-200 text-[11px] font-extrabold text-ink"
+        >
+          {initials}
+        </div>
       </div>
     </header>
   );
 }
+

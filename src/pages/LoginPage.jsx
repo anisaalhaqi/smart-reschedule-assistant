@@ -1,21 +1,37 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import LoginInput from "../pages/LoginInput";
+import LoginInput from "./LoginInput";
 import { login } from "../data/AuthAPI";
 
 function LoginPage({ loginSuccess }) {
-  async function onLogin({ email, password }) {
-    const { error, data } = await login({ email, password });
+  const [errorMessage, setErrorMessage] = useState("");
 
-    if (!error) {
-      loginSuccess(data);
+  async function onLogin({ email, password }) {
+    setErrorMessage("");
+
+    const result = await login({ email, password });
+
+    if (result.error) {
+      setErrorMessage(result.message);
+      return;
     }
+
+    loginSuccess(result.data);
   }
 
   return (
     <section className="login-page">
       <h2>Login</h2>
+
+      {errorMessage && (
+        <p role="alert" className="text-red-600">
+          {errorMessage}
+        </p>
+      )}
+
       <LoginInput login={onLogin} />
+
       <p>
         Belum punya akun? <Link to="/register">Register</Link>
       </p>
@@ -26,3 +42,5 @@ function LoginPage({ loginSuccess }) {
 LoginPage.propTypes = {
   loginSuccess: PropTypes.func.isRequired,
 };
+
+export default LoginPage;
