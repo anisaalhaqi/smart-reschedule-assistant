@@ -68,11 +68,21 @@ export default function App() {
     setError("");
   }
 
-  async function updateStatus(id, status, slotId) {
+  async function analyzeRequest(id) {
+    const result = await api(`/reschedule-requests/${id}/ai-review`, { token, method: "POST" });
+    if (result.manual_review === "CANCELLATION") {
+      setRequests((current) => current.map((item) =>
+        item.id === id && item.status === "PENDING" ? { ...item, cancellationReview: true } : item,
+      ));
+    }
+    return result;
+  }
+
+  async function updateStatus(id, status, slotId, confirmReschedule) {
     await api(`/reschedule-requests/${id}`, {
       token,
       method: "PATCH",
-      body: { status, available_slot_id: slotId },
+      body: { status, available_slot_id: slotId, confirm_reschedule: confirmReschedule },
     });
     await loadRequests();
   }
@@ -159,7 +169,7 @@ export default function App() {
                 selectedId={selectedId}
                 selectRequest={setSelectedId}
                 onStatusChange={updateStatus}
-                onAnalyze={(id) => api(`/reschedule-requests/${id}/ai-review`, { token, method: "POST" })}
+                onAnalyze={analyzeRequest}
               />
             </>
           )}

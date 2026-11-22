@@ -1,4 +1,5 @@
 const { analyzeMessage, draftResponse, filterSlotsByPreference } = require('../../../integration/backend/aiServiceClient');
+const { markCancellationReview } = require('./reschedule-requests.service');
 const { getAvailableSlots } = require('./available-slots.service');
 
 const INTENTS = new Set(['RESCHEDULE', 'CANCELLATION', 'SCHEDULE_INQUIRY', 'CONFIRMATION', 'OTHER']);
@@ -17,26 +18,35 @@ async function buildAiReview(request) {
   // PostgreSQL menyimpan waktu pengajuan. Pakai waktu itu untuk "besok", termasuk saat dibuka ulang.
   const message = Array.from(request.reason.trim()).slice(0, 2000).join('');
   const timestamp = new Date(request.created_at).toISOString();
+  const manualReview = request.status !== 'APPROVED' && request.ai_cancellation_review
+    ? { manual_review: 'CANCELLATION' }
+    : {};
   const analyzed = await analyzeMessage({ message_text: message, message_timestamp: timestamp });
-  if (!analyzed.ok) return { analysis: null, slots: [], draft: null, error: analyzed.error.code };
+  if (!analyzed.ok) return { analysis: null, slots: [], draft: null, error: analyzed.error.code, ...manualReview };
 
   const analysis = analyzed.data;
   if (!INTENTS.has(analysis.intent) || !Number.isFinite(analysis.confidence) ||
       analysis.confidence < 0 || analysis.confidence > 1 ||
       typeof analysis.needs_review !== 'boolean' || !Array.isArray(analysis.review_reasons) ||
       !analysis.preference || typeof analysis.preference !== 'object') {
-    return { analysis: null, slots: [], draft: null, error: 'AI_INVALID_RESPONSE' };
+    return { analysis: null, slots: [], draft: null, error: 'AI_INVALID_RESPONSE', ...manualReview };
   }
 
-  const wibNow = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString();
-  const today = wibNow.slice(0, 10);
-  const nowWib = wibNow.slice(11, 16);
+  // A reschedule request has no cancellation decision. Keep cancellation
+  // messages in manual review until an admin verifies the customer's intent.
+  if (manualReview.manual_review || (analysis.intent === 'CANCELLATION' && request.status !== 'APPROVED')) {
+    if (request.status === 'PENDING' && !manualReview.manual_review) {
+      await markCancellationReview(request.id);
+    }
+    return { analysis, slots: [], draft: null, error: null, manual_review: 'CANCELLATION' };
+  }
+
   const canSuggest = ['RESCHEDULE', 'SCHEDULE_INQUIRY'].includes(analysis.intent) &&
     request.status !== 'APPROVED' && !analysis.preference.is_ambiguous &&
     analysis.preference.source !== 'NONE';
   const slots = canSuggest
-    ? filterSlotsByPreference((await getAvailableSlots(null, today)).map(formatSlot), analysis.preference)
-        .filter((slot) => slot.slot_id !== request.available_slot_id && (slot.date > today || slot.start_time > nowWib))
+    ? filterSlotsByPreference((await getAvailableSlots()).map(formatSlot), analysis.preference)
+        .filter((slot) => slot.slot_id !== request.available_slot_id)
         .slice(0, 20)
     : [];
 

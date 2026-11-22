@@ -30,7 +30,7 @@ async function request(method, path, body) {
     });
     const json = await res.json().catch(() => null);
     if (!res.ok) {
-      return { ok: false, error: json?.error || { code: 'AI_SERVICE_ERROR', message: `HTTP ${res.status}` } };
+      return { ok: false, error: typeof json?.error?.code === 'string' ? json.error : { code: 'AI_SERVICE_ERROR', message: `HTTP ${res.status}` } };
     }
     if (!json?.data || typeof json.data !== 'object' || Array.isArray(json.data)) {
       return { ok: false, error: { code: 'AI_INVALID_RESPONSE', message: 'AI response has no data object' } };
@@ -50,7 +50,7 @@ function checkHealth() {
 }
 
 /**
- * POST /api/v1/analyze — panggil saat POST /api/reschedule-requests.
+ * POST /api/v1/analyze — panggil saat admin meminta AI review.
  * @param {{ message_text: string, message_timestamp?: string }} payload
  *   message_timestamp ISO 8601, mis. "2026-10-09T19:00:00+07:00" (tanpa zona = WIB)
  */
@@ -67,11 +67,11 @@ function classifyMessage({ message_text }) {
  * POST /api/v1/draft-response — panggil saat admin membuka/memutuskan request.
  * @param {object} payload
  * @param {'RESCHEDULE'|'CANCELLATION'|'SCHEDULE_INQUIRY'|'CONFIRMATION'|'OTHER'} payload.intent
- * @param {object} [payload.schedule]        objek dari GET /api/schedules/:id ({ id, customer_name, class_name, date, time })
+ * @param {object} [payload.schedule]        hasil pemetaan jadwal ({ id, customer_name, class_name, date, time })
  * @param {string} [payload.customer_name]   default: schedule.customer_name
  * @param {'Kak'|'Bapak'|'Ibu'} [payload.salutation]
  * @param {object} [payload.preference]      dari hasil analyze (ai_preference)
- * @param {object[]} [payload.available_slots] objek dari GET /api/available-slots ({ slot_id, date, start_time, end_time, available })
+ * @param {object[]} [payload.available_slots] hasil pemetaan slot PostgreSQL ({ slot_id, date, start_time, end_time, available })
  * @param {'PENDING'|'APPROVED'|'REJECTED'} [payload.status]
  * @param {string} [payload.approved_date]   wajib jika status APPROVED untuk RESCHEDULE
  * @param {string} [payload.approved_time]
@@ -91,7 +91,7 @@ function filterSlotsByPreference(slots, preference) {
   return slots.filter((s) => {
     if (s.available === false) return false;
     if (requested_date && s.date !== requested_date) return false;
-    if (requested_time && !start_time && s.start_time !== requested_time) return false;
+    if (requested_time && s.start_time !== requested_time) return false;
     if (date_from && s.date < date_from) return false;
     if (date_to && s.date > date_to) return false;
     if (start_time && s.start_time < start_time) return false;

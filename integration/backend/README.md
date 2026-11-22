@@ -17,9 +17,17 @@ disimpan di server.
    memproses slot awal yang diajukan customer.
 4. Backend mengirim intent, konteks jadwal dan daftar slot ke `POST /api/v1/draft-response`.
    Respons review berisi `data.analysis`, `data.slots`, `data.draft` dan `data.error`.
+   Jika pesan terdeteksi sebagai pembatalan dan permintaan pindah belum disetujui, respons
+   menyertakan `data.manual_review: "CANCELLATION"` dengan `slots: []` dan `draft: null`.
+   Untuk permintaan yang masih pending, backend menyimpan flag `ai_cancellation_review`
+   sehingga penanda terlihat lagi setelah reload dan tetap berlaku ketika AI Service offline.
+   Admin perlu memverifikasi maksud customer. Approval yang tersedia di API ini memindahkan jadwal.
+   Pembatalan sesi ditangani secara manual.
    Ketika AI gagal, `data.error` berisi kode kegagalan dan admin masih bisa membuat draft sendiri.
 5. Keputusan admin menggunakan `PATCH /api/reschedule-requests/:id` dengan `status` dan
-   `available_slot_id` opsional saat `APPROVED`. Backend mengecek ulang slot dalam transaksi.
+   `available_slot_id` opsional saat `APPROVED`. Jika flag cancellation aktif, approval wajib
+   menyertakan `confirm_reschedule: true`. Jika belum dikonfirmasi, backend mengembalikan HTTP 409.
+   Penolakan request tetap dapat dilakukan. Backend mengecek ulang slot dalam transaksi.
    Admin dapat membuat draft baru setelah persetujuan agar balasan merujuk slot final.
 
 Request review dijalankan saat admin membutuhkannya, termasuk untuk request yang tersimpan
@@ -27,3 +35,6 @@ sebelum integrasi. Hasil AI dan edit draft berada di layar review. Salin draft s
 meninggalkan request. Aplikasi tidak memiliki pengiriman pesan otomatis.
 
 [Kontrak FastAPI](../../docs/AI_API_CONTRACT.md) · [Panduan menjalankan aplikasi](../../README.md)
+
+Jalankan migrasi SQL `004_reschedule_ai_review.sql` sebelum menjalankan versi backend ini pada database yang sudah ada.
+Tes integrasi HTTP dapat diulang dengan `npm --prefix backend test` dari root repo.

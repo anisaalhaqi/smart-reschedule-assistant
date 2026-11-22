@@ -65,6 +65,9 @@ npm ci
 npm run dev
 ```
 
+Pada database yang sudah dipakai, jalankan `backend/sql/004_reschedule_ai_review.sql` sebelum
+menjalankan backend versi ini. Tes integrasi HTTP dapat dijalankan dengan `npm --prefix backend test`.
+
 ## Coba alur demo
 
 1. Masuk sebagai `budi.santoso.demo@example.test` memakai password dari seed. Pilih kelas Pilates

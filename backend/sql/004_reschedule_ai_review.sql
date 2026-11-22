@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE reschedule_requests
+  ADD COLUMN IF NOT EXISTS ai_cancellation_review BOOLEAN NOT NULL DEFAULT FALSE;
+
+COMMIT;

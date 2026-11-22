@@ -6,7 +6,7 @@ dan dicatat di tabel riwayat di bawah. Versi aktif muncul di `GET /health` dan d
 ## Draft respons (`DRAFT_SYSTEM_PROMPT` + `build_draft_user_prompt`)
 
 - **Tujuan:** draft balasan WhatsApp yang sopan dan hangat untuk segmen ibu-ibu, lansia, dan kalangan menengah ke atas.
-- **Model:** Gemini (`GEMINI_MODEL`, default `gemini-2.5-flash`), temperature 0.4, thinking dimatikan.
+- **Model:** Gemini (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`), temperature 0.4. Thinking budget nol hanya untuk model Gemini 2.5.
 - **Konteks yang dikirim:** sapaan + nama panggilan, kelas, jadwal awal, pesan customer, keputusan admin,
   jadwal disetujui, dan daftar slot tersedia (maks 5). Integrasi Web mengirim draft tanpa teks pesan mentah.
   Ekstraksi preferensi dapat mengirim teks pesan ke Gemini ketika fallback LLM aktif.

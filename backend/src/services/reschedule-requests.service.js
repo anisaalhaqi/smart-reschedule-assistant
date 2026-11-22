@@ -35,11 +35,11 @@ const createRescheduleRequest = async ({
     );
 
     if (scheduleResult.rows.length === 0) {
-      return rollbackAndReturn(client, serviceError(404, 'Schedule not found'));
+      return await rollbackAndReturn(client, serviceError(404, 'Schedule not found'));
     }
 
     if (scheduleResult.rows[0].status !== 'SCHEDULED') {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(409, 'Schedule is not available for rescheduling')
       );
@@ -57,7 +57,7 @@ const createRescheduleRequest = async ({
     );
 
     if (pendingRequestResult.rows.length > 0) {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(
           409,
@@ -68,7 +68,8 @@ const createRescheduleRequest = async ({
 
     const slotResult = await client.query(
       `
-        SELECT id, is_booked
+        SELECT id, is_booked,
+          slot_date + start_time > (clock_timestamp() AT TIME ZONE 'Asia/Jakarta') AS is_future
         FROM available_slots
         WHERE id = $1
         FOR UPDATE
@@ -77,14 +78,18 @@ const createRescheduleRequest = async ({
     );
 
     if (slotResult.rows.length === 0) {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(404, 'Available slot not found')
       );
     }
 
+    if (!slotResult.rows[0].is_future) {
+      return await rollbackAndReturn(client, serviceError(409, 'Available slot has already started'));
+    }
+
     if (slotResult.rows[0].is_booked) {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(409, 'Available slot is already booked')
       );
@@ -102,7 +107,7 @@ const createRescheduleRequest = async ({
     );
 
     if (activeSlotRequestResult.rows.length > 0) {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(
           409,
@@ -168,6 +173,7 @@ const getRescheduleRequests = async ({ role, userId }) => {
         slot.start_time AS requested_start_time,
         slot.end_time AS requested_end_time,
         rr.reason,
+        rr.ai_cancellation_review,
         rr.status,
         rr.created_at,
         rr.updated_at
@@ -201,6 +207,7 @@ const getRescheduleRequestById = async ({ id, role, userId }) => {
         slot.start_time AS requested_start_time,
         slot.end_time AS requested_end_time,
         rr.reason,
+        rr.ai_cancellation_review,
         rr.status,
         rr.created_at,
         rr.updated_at
@@ -218,7 +225,15 @@ const getRescheduleRequestById = async ({ id, role, userId }) => {
   return result.rows[0];
 };
 
-const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
+async function markCancellationReview(id) {
+  await pool.query(
+    `UPDATE reschedule_requests SET ai_cancellation_review = TRUE
+     WHERE id = $1 AND status = 'PENDING' AND ai_cancellation_review = FALSE`,
+    [id]
+  );
+}
+
+const processRescheduleRequest = async ({ id, status, availableSlotId, confirmedReschedule }) => {
   let client;
   let transactionStarted = false;
 
@@ -233,6 +248,7 @@ const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
           rr.id,
           rr.schedule_id,
           rr.available_slot_id,
+          rr.ai_cancellation_review,
           rr.status AS request_status,
           s.status AS schedule_status
         FROM reschedule_requests AS rr
@@ -245,7 +261,7 @@ const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
     );
 
     if (requestResult.rows.length === 0) {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(404, 'Reschedule request not found')
       );
@@ -254,7 +270,7 @@ const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
     const request = requestResult.rows[0];
 
     if (request.request_status !== 'PENDING') {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(409, 'Only pending requests can be processed')
       );
@@ -286,8 +302,15 @@ const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
       return { rescheduleRequest: updateResult.rows[0] };
     }
 
+    if (request.ai_cancellation_review && confirmedReschedule !== true) {
+      return await rollbackAndReturn(
+        client,
+        serviceError(409, 'Verify that the customer wants to reschedule before approving')
+      );
+    }
+
     if (request.schedule_status !== 'SCHEDULED') {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(409, 'Schedule is no longer available for rescheduling')
       );
@@ -302,7 +325,8 @@ const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
           is_booked,
           slot_date,
           start_time,
-          end_time
+          end_time,
+          slot_date + start_time > (clock_timestamp() AT TIME ZONE 'Asia/Jakarta') AS is_future
         FROM available_slots
         WHERE id = $1
         FOR UPDATE
@@ -311,7 +335,7 @@ const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
     );
 
     if (slotResult.rows.length === 0) {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(404, 'Available slot not found')
       );
@@ -319,8 +343,12 @@ const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
 
     const slot = slotResult.rows[0];
 
+    if (!slot.is_future) {
+      return await rollbackAndReturn(client, serviceError(409, 'Available slot has already started'));
+    }
+
     if (slot.is_booked) {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(409, 'Available slot is already booked')
       );
@@ -339,7 +367,7 @@ const processRescheduleRequest = async ({ id, status, availableSlotId }) => {
     );
 
     if (conflictResult.rows.length > 0) {
-      return rollbackAndReturn(
+      return await rollbackAndReturn(
         client,
         serviceError(
           409,
@@ -422,4 +450,5 @@ module.exports = {
   getRescheduleRequests,
   getRescheduleRequestById,
   processRescheduleRequest,
+  markCancellationReview,
 };

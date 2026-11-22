@@ -116,7 +116,7 @@ def classify(body: ClassifyRequest, request: Request):
 @app.post("/api/v1/analyze", response_model=DataResponse[AnalyzeData], responses=ERROR_RESPONSES,
           tags=["ai"], dependencies=[Depends(require_api_key)])
 def analyze(body: AnalyzeRequest, request: Request):
-    """Intent + confidence + flag review + preferensi jadwal. Dipanggil Backend saat request reschedule dibuat."""
+    """Intent + confidence + flag review + preferensi jadwal. Dipanggil Backend saat admin menjalankan review."""
     clf = request.app.state.classifier
     pred = clf.predict(body.message_text)
     ts = to_wib(body.message_timestamp)

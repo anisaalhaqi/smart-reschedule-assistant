@@ -35,7 +35,7 @@ class Settings:
 
     # LLM (Gemini). Jika GEMINI_API_KEY kosong, draft memakai template dan ekstraksi tanpa fallback LLM.
     gemini_api_key: str = field(default_factory=lambda: os.getenv("GEMINI_API_KEY", ""))
-    gemini_model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
+    gemini_model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"))
     llm_timeout_seconds: float = field(default_factory=lambda: _float("LLM_TIMEOUT_SECONDS", 8.0))
     llm_max_retries: int = field(default_factory=lambda: _int("LLM_MAX_RETRIES", 1))
 

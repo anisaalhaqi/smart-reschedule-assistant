@@ -36,7 +36,7 @@ def generate(system_prompt: str, user_prompt: str, *, json_output: bool = False,
     for attempt in range(settings.llm_max_retries + 1):
         try:
             resp = httpx.post(url, json=body, headers=headers, timeout=settings.llm_timeout_seconds)
-            if resp.status_code in (400, 401, 403, 429):
+            if resp.status_code in (400, 401, 403, 404, 429):
                 # Kuota habis / key salah: retry tidak membantu, langsung fallback
                 logger.warning("Gemini menolak request (%s)", resp.status_code)
                 return None

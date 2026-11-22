@@ -122,7 +122,7 @@ const getRescheduleRequestById = async (req, res) => {
 
 const processRescheduleRequest = async (req, res) => {
   const id = Number(req.params.id);
-  const { status, available_slot_id } = req.body ?? {};
+  const { status, available_slot_id, confirm_reschedule } = req.body ?? {};
 
   if (!Number.isSafeInteger(id) || id <= 0) {
     return res.status(400).json({
@@ -144,11 +144,16 @@ const processRescheduleRequest = async (req, res) => {
     return res.status(400).json({ status: 'error', message: 'Invalid approval slot' });
   }
 
+  if (confirm_reschedule !== undefined && (status !== 'APPROVED' || typeof confirm_reschedule !== 'boolean')) {
+    return res.status(400).json({ status: 'error', message: 'Invalid reschedule confirmation' });
+  }
+
   try {
     const result = await rescheduleRequestsService.processRescheduleRequest({
       id,
       status,
       availableSlotId: available_slot_id,
+      confirmedReschedule: confirm_reschedule,
     });
 
     if (result.error) {

@@ -9,6 +9,7 @@ import StatusBadge from "../components/StatusBadge";
 export default function RequestDetail({ request, onStatusChange, onAnalyze }) {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [review, setReview] = useState(null);
+  const [confirmedReschedule, setConfirmedReschedule] = useState(false);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +21,9 @@ export default function RequestDetail({ request, onStatusChange, onAnalyze }) {
       const result = await onAnalyze(request.id);
       setReview(result);
       setSelectedSlot(null);
-      if (result.draft) setDraft(result.draft.draft_text);
+      setConfirmedReschedule(false);
+      if (result.manual_review) setDraft("");
+      else if (result.draft) setDraft(result.draft.draft_text);
     } catch (issue) {
       setError(issue.message);
     } finally {
@@ -32,7 +35,12 @@ export default function RequestDetail({ request, onStatusChange, onAnalyze }) {
     setBusy("decision");
     setError("");
     try {
-      await onStatusChange(request.id, status, status === "APPROVED" ? selectedSlot ?? undefined : undefined);
+      await onStatusChange(
+        request.id,
+        status,
+        status === "APPROVED" ? selectedSlot ?? undefined : undefined,
+        status === "APPROVED" && confirmedReschedule ? true : undefined,
+      );
     } catch (issue) {
       setError(issue.message);
     } finally {
@@ -58,6 +66,7 @@ export default function RequestDetail({ request, onStatusChange, onAnalyze }) {
 
   const slots = review?.slots || [];
   const pending = request.status === "PENDING";
+  const manualCancellation = review?.manual_review === "CANCELLATION" || (pending && request.cancellationReview);
   const analysis = review?.analysis;
   const preference = analysis?.preference;
 
@@ -136,6 +145,7 @@ export default function RequestDetail({ request, onStatusChange, onAnalyze }) {
         <div className="space-y-2 p-4 text-xs sm:p-5">
           {error && <p role="alert" className="text-rose-700">{error}</p>}
           {review?.error && <p role="status" className="text-orange-700">Sebagian hasil AI belum tersedia ({review.error}). Kamu tetap bisa memproses permintaan.</p>}
+          {manualCancellation && <p role="status" className="text-orange-700">Pesan ini terdeteksi sebagai pembatalan. Verifikasi ke customer dan tangani pembatalan secara manual.</p>}
           {analysis && (
             <>
               <p><strong>Intent</strong> {analysis.intent} · {Math.round(analysis.confidence * 100)}%</p>
@@ -143,7 +153,8 @@ export default function RequestDetail({ request, onStatusChange, onAnalyze }) {
               <p><strong>Preferensi</strong> {[
                 preference.requested_date || preference.day_name ||
                   (preference.date_from && `${preference.date_from} – ${preference.date_to || preference.date_from}`),
-                preference.requested_time || preference.time_of_day,
+                preference.requested_time || (preference.start_time && preference.end_time
+                  ? `${preference.start_time}–${preference.end_time}` : preference.time_of_day),
               ].filter(Boolean).join(" · ") || "Belum ditemukan"}</p>
             </>
           )}
@@ -163,7 +174,7 @@ export default function RequestDetail({ request, onStatusChange, onAnalyze }) {
               {slotLabel(slot)}
             </label>
           ))}
-          {analysis && !slots.length && <p className="text-xs text-muted">Tidak ada slot alternatif yang cocok.</p>}
+          {analysis && !manualCancellation && !slots.length && <p className="text-xs text-muted">Tidak ada slot alternatif yang cocok.</p>}
         </section>
       )}
 
@@ -192,17 +203,23 @@ export default function RequestDetail({ request, onStatusChange, onAnalyze }) {
           aria-label="Draft balasan"
           rows={5}
           className="mt-4 w-full resize-y rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-xs leading-6 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-50"
-          placeholder="Draft balasan AI will appear here..."
+          placeholder="Buat draft AI atau tulis balasan sendiri…"
         />
 
+        {pending && manualCancellation && (
+          <label className="mt-3 flex items-center gap-2 text-xs">
+            <input type="checkbox" checked={confirmedReschedule} onChange={(event) => setConfirmedReschedule(event.target.checked)} />
+            Saya sudah memastikan customer ingin pindah jadwal.
+          </label>
+        )}
         <div className="mt-3 flex flex-col gap-2 sm:flex-row">
           <button
             onClick={() => decide("APPROVED")}
-            disabled={!pending || Boolean(busy)}
+            disabled={!pending || Boolean(busy) || (manualCancellation && !confirmedReschedule)}
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2.5 text-[11px] font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Check size={14} />
-            Setujui slot
+            Setujui pindah jadwal
           </button>
 
           <button

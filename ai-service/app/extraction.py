@@ -338,14 +338,12 @@ def extract_preference(message_text: str, message_timestamp: datetime | None = N
         pref.date_to = (monday + timedelta(days=6)).isoformat()
 
     if merged.hour is not None:
-        pref.requested_time = _hhmm(merged.hour, merged.minute)
         pref.time_of_day = _part_of_hour(merged.hour)
-        pref.start_time = pref.requested_time
         if merged.end_hour is not None:
+            pref.start_time = _hhmm(merged.hour, merged.minute)
             pref.end_time = _hhmm(merged.end_hour, merged.end_minute)
         else:
-            end = min(merged.hour * 60 + merged.minute + 60, 23 * 60 + 59)
-            pref.end_time = _hhmm(end // 60, end % 60)
+            pref.requested_time = _hhmm(merged.hour, merged.minute)
     elif merged.part:
         pref.time_of_day = merged.part
         pref.start_time, pref.end_time = _clamp_range(*TIME_OF_DAY_RANGES[merged.part])
@@ -375,9 +373,7 @@ def extract_preference_llm(message_text: str, message_timestamp: datetime | None
             if not isinstance(raw_time, str) or not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", raw_time):
                 return None
             h, m = (int(x) for x in raw_time.split(":"))
-            pref.requested_time = pref.start_time = _hhmm(h, m)
-            end = min(h * 60 + m + 60, 23 * 60 + 59)
-            pref.end_time = _hhmm(end // 60, end % 60)
+            pref.requested_time = _hhmm(h, m)
             pref.time_of_day = _part_of_hour(h)
         elif data.get("time_of_day") in TIME_OF_DAY_RANGES:
             pref.time_of_day = data["time_of_day"]

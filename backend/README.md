@@ -74,7 +74,9 @@ Seluruh endpoint menggunakan prefix `/api`.
 
 | Metode | Endpoint | Akses | Fungsi |
 | --- | --- | --- | --- |
-| GET | `/api/available-slots` | Pengguna terautentikasi | Melihat slot yang tersedia sesuai aturan backend |
+| GET | `/api/available-slots` | Pengguna terautentikasi | Melihat slot mendatang yang belum dipesan atau direservasi |
+
+Slot yang sudah dimulai menurut waktu WIB tidak dapat diajukan atau disetujui. Backend mengembalikan HTTP 409.
 
 ### 4.4 Permintaan Reschedule
 
@@ -83,7 +85,7 @@ Seluruh endpoint menggunakan prefix `/api`.
 | POST | `/api/reschedule-requests` | Customer | Membuat permintaan reschedule |
 | GET | `/api/reschedule-requests` | Customer dan Admin | Melihat daftar permintaan sesuai hak akses |
 | GET | `/api/reschedule-requests/:id` | Customer dan Admin | Melihat detail permintaan sesuai hak akses |
-| PATCH | `/api/reschedule-requests/:id` | Admin | Menyetujui atau menolak permintaan |
+| PATCH | `/api/reschedule-requests/:id` | Admin | Menyetujui pindah jadwal atau menolak permintaan. Lihat aturan konfirmasi di [integrasi AI](../integration/backend/README.md). |
 | POST | `/api/reschedule-requests/:id/ai-review` | Admin | Analisis pesan, baca slot alternatif, dan buat draft |
 
 ### 4.5 Health Check

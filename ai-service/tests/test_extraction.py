@@ -19,12 +19,14 @@ def test_explicit_hour_with_part_of_day():
     p = extract_preference("bsk gbs kak, mingdep senin jam 4 sore bisa?", FRIDAY_EVENING)
     assert p.requested_date == "2026-10-12"
     assert p.requested_time == "16:00"
+    assert (p.start_time, p.end_time) == (None, None)
 
 
 def test_from_to_pattern_and_time_range():
     p = extract_preference("dari kamis ke sabtu jam 7-9 ya min", FRIDAY_EVENING)
     assert p.requested_date == "2026-10-10"
     assert (p.start_time, p.end_time) == ("07:00", "09:00")
+    assert p.requested_time is None
 
 
 def test_explicit_date_with_month():

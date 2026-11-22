@@ -31,6 +31,7 @@ export function mapRequest(row) {
     requestedTime: row.requested_start_time.slice(0, 5),
     message: row.reason,
     status: row.status,
+    cancellationReview: row.ai_cancellation_review === true,
     created: new Intl.DateTimeFormat("id-ID", {
       timeZone: "Asia/Jakarta", dateStyle: "medium", timeStyle: "short",
     }).format(new Date(row.created_at)),

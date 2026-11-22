@@ -18,9 +18,7 @@ Dokumentasi interaktif: `GET /docs` (Swagger UI) dan `GET /openapi.json`.
 | HTTP status | 200, 400 (`VALIDATION_ERROR`), 401 (`UNAUTHORIZED`), 404 (`NOT_FOUND`), 500 (`INTERNAL_ERROR`) |
 | Auth (opsional) | Header `X-API-Key` jika `AI_SERVICE_API_KEY` diisi di AI Service |
 
-Objek `schedule` dan `available_slots` pada `draft-response` sengaja memakai bentuk yang sama dengan
-response `GET /api/schedules/:id` dan `GET /api/available-slots`, jadi Backend bisa meneruskannya apa adanya
-(field tambahan seperti `status` diabaikan).
+Backend memetakan tanggal dan jam dari PostgreSQL ke field `date`, `time`, `start_time` dan `end_time` dengan format `YYYY-MM-DD` dan `HH:MM` sebelum memanggil `draft-response`.
 
 ---
 
@@ -35,14 +33,14 @@ response `GET /api/schedules/:id` dan `GET /api/available-slots`, jadi Backend b
     "model_version": "tfidf-lr-20261101",
     "lexicon_loaded": true,
     "llm_enabled": true,
-    "prompt_version": "draft-v2"
+    "prompt_version": "draft-v3"
   }
 }
 ```
 
 ## POST /api/v1/analyze
 
-Dipanggil Backend saat `POST /api/reschedule-requests` dibuat.
+Backend memanggil endpoint ini saat admin menjalankan `POST /api/reschedule-requests/:id/ai-review`. Waktu pesan berasal dari `created_at` pada permintaan yang tersimpan.
 
 Request:
 ```json
@@ -82,9 +80,9 @@ Response 200:
 |---|---|
 | `needs_review` | `true` jika `review_reasons` tidak kosong → UI menandai "perlu review admin" |
 | `review_reasons` | `LOW_CONFIDENCE` (confidence < 0.6), `PREFERENCE_NOT_FOUND` (intent RESCHEDULE tapi tidak ada tanggal/jam), `AMBIGUOUS_PREFERENCE` |
-| `preference.requested_date/requested_time` | Bisa langsung mengisi `requested_date`/`requested_time` request Web jika form kosong |
+| `preference.requested_date/requested_time` | Tanggal dan jam mulai persis, jika disebut eksplisit |
 | `preference.date_from/date_to` | Filter tanggal slot (inklusif). Terisi juga untuk "minggu depan" walau `requested_date` null |
-| `preference.start_time/end_time` | Filter jam slot: `start_time <= slot.start_time < end_time` |
+| `preference.start_time/end_time` | Untuk rentang atau bagian hari, filter jam mulai slot dengan batas akhir eksklusif |
 | `preference.source` | `RULE` (parser), `LLM` (fallback Gemini), `NONE` (tidak ditemukan) |
 
 ## POST /api/v1/classify
@@ -147,7 +145,7 @@ Response 200:
     "mentioned_slots": [{"slot_id": 701, "date": "2026-10-17", "start_time": "08:00"}],
     "source": "LLM",
     "fallback_reason": null,
-    "prompt_version": "draft-v2"
+    "prompt_version": "draft-v3"
   }
 }
 ```
@@ -163,8 +161,7 @@ melanggar guardrail (`fallback_reason: "GUARDRAIL:UNKNOWN_TIME:14:00"`, dst.).
 {"error": {"code": "UNAUTHORIZED", "message": "Header X-API-Key tidak valid"}}
 ```
 
-## Hal yang masih perlu disepakati dengan tim Fullstack
+## Integrasi Express
 
-- Apakah `message_text`/`message_timestamp` masuk body `POST /api/reschedule-requests` (usulan: ya).
-- Approval mengacu ke `approved_date`+`approved_time` atau `slot_id` (AI Service menerima keduanya lewat `available_slots`).
-- Kolom penyimpanan hasil AI — usulan ada di `integration/backend/README.md`.
+Lihat [alur dan kontrak review admin](../integration/backend/README.md) untuk respons Express,
+opsi approval, dan penanganan intent pembatalan.
