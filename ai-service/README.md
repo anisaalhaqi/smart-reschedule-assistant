@@ -55,10 +55,11 @@ Tanpa `GEMINI_API_KEY` service tetap berjalan: draft memakai template dan ekstra
 python scripts/generate_dataset.py --per-intent 300 --seed 42
 python scripts/train_baseline.py          # simpan models/intent_tfidf_lr.joblib + reports/evaluation_baseline.md
 python -m pytest -q
+python scripts/evaluate_preference.py   # exact match ekstraksi di 25 pesan sintetis
 python scripts/eval_draft_scenarios.py    # pakai Gemini jika key ada; jeda 13 dtk/skenario (free tier 5 RPM)
 ```
 
-IndoBERT (Colab GPU): lihat docstring `scripts/train_indobert.py`, lalu jalankan service dengan
+Perbandingan dengan IndoBERT ada di [AI_VERIFICATION.md](../docs/AI_VERIFICATION.md). Untuk training, lihat docstring `scripts/train_indobert.py`, lalu jalankan service dengan
 `INTENT_MODEL_TYPE=indobert INTENT_MODEL_PATH=models/indobert-intent`.
 
 ### Hasil baseline saat ini (TF-IDF + LR, `reports/evaluation_baseline.md`)
@@ -84,4 +85,4 @@ Build lokal: `docker build -t gymnasyum-ai . && docker run -p 7860:7860 --env-fi
 - `../docs/AI_API_CONTRACT.md` — kontrak endpoint + contoh JSON
 - `../docs/PROMPTS.md` — prompt, guardrail, riwayat versi
 - `../docs/DATASET_CARD.md` — dataset & pedoman labeling
-- `../integration/backend/` — client Node.js untuk Backend Express + usulan kolom DB
+- `../integration/backend/` — alur review admin di Express dan client AI Service

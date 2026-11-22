@@ -5,15 +5,21 @@ status PENDING/APPROVED/REJECTED, response sukses {"data": ...}, error
 {"error": {"code", "message"}}) supaya Backend bisa meneruskan objek schedule
 dan available slot apa adanya.
 """
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
-from typing import Generic, Literal, TypeVar
+from typing import Annotated, Generic, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 DATE_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
 TIME_PATTERN = r"^([01]\d|2[0-3]):[0-5]\d$"
 
+def calendar_date(value: str) -> str:
+    date.fromisoformat(value)
+    return value
+
+
+DateString = Annotated[str, Field(pattern=DATE_PATTERN), AfterValidator(calendar_date)]
 T = TypeVar("T")
 
 
@@ -118,7 +124,7 @@ class ScheduleIn(BaseModel):
     id: int | str | None = None
     customer_name: str | None = None
     class_name: str | None = None
-    date: str = Field(pattern=DATE_PATTERN)
+    date: DateString
     time: str = Field(pattern=TIME_PATTERN)
 
 
@@ -127,7 +133,7 @@ class SlotIn(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     slot_id: int | str | None = None
-    date: str = Field(pattern=DATE_PATTERN)
+    date: DateString
     start_time: str = Field(pattern=TIME_PATTERN)
     end_time: str | None = Field(None, pattern=TIME_PATTERN)
     available: bool = True
@@ -142,7 +148,7 @@ class DraftResponseRequest(BaseModel):
     preference: SchedulePreference | None = None
     available_slots: list[SlotIn] = Field(default_factory=list, max_length=20)
     status: RequestStatus = Field(RequestStatus.PENDING, description="Keputusan admin (sama dengan status request)")
-    approved_date: str | None = Field(None, pattern=DATE_PATTERN)
+    approved_date: DateString | None = None
     approved_time: str | None = Field(None, pattern=TIME_PATTERN)
     message_text: str | None = Field(None, max_length=2000)
 

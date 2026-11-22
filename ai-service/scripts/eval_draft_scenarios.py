@@ -76,6 +76,8 @@ def build_scenarios() -> list[dict]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--delay", type=float, default=13.0, help="jeda antar-skenario (detik)")
+    parser.add_argument("--output", type=Path, default=ROOT / "reports" / "draft_scenarios.csv",
+                        help="Gunakan file terpisah untuk evaluasi Gemini agar skor template terjaga.")
     args = parser.parse_args()
 
     scenarios = build_scenarios()
@@ -97,16 +99,16 @@ def main() -> int:
         if settings.llm_enabled and n < len(scenarios) - 1:
             time.sleep(args.delay)
 
-    out = ROOT / "reports" / "draft_scenarios.csv"
+    out = args.output
     with out.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
     llm_count = sum(r["source"] == "LLM" for r in rows)
     fictitious = sum(r["fictitious_slot"] == "YA" for r in rows)
     print(f"\n{len(rows)} skenario | LLM: {llm_count} | TEMPLATE: {len(rows) - llm_count} | slot fiktif: {fictitious}")
-    print(f"Hasil: {out.relative_to(ROOT)} (isi kolom skor_* secara manual)")
+    print(f"Hasil: {out} (isi kolom skor_* setelah ditinjau)")
     return 0
 
 

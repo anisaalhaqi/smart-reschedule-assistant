@@ -1,98 +1,29 @@
-# Integrasi Backend (Express) ↔ AI Service
+# Integrasi Backend dengan AI Service
 
-File `aiServiceClient.js` siap disalin ke backend. Nama field sama dengan API contract Web
-(`schedule_id`, `customer_name`, `class_name`, `requested_date`, `requested_time`, `slot_id`,
-`start_time`, `end_time`, `status`, `approved_date`, `approved_time`, `message_text`, `message_timestamp`).
+Backend Express memakai `aiServiceClient.js`, yang memanggil FastAPI melalui HTTP. Atur
+`AI_SERVICE_URL`, `AI_SERVICE_API_KEY` dan `AI_SERVICE_TIMEOUT_MS` di `backend/.env`.
+Jika AI Service memakai API key, kedua service harus memiliki nilai yang sama. Nilai tersebut
+disimpan di server.
 
-## 1. Env backend
+## Alur peninjauan admin
 
-```env
-AI_SERVICE_URL=http://localhost:8000
-AI_SERVICE_API_KEY=
-AI_SERVICE_TIMEOUT_MS=10000
-```
+1. Customer membuat request lewat `POST /api/reschedule-requests` dengan ID jadwal, ID slot tujuan
+   dan pesan bebas di field `reason`. Backend menyimpan waktu pengajuan di `created_at`.
+2. Admin memilih **Analisis & buat draft**. Browser memanggil
+   `POST /api/reschedule-requests/:id/ai-review` dengan JWT admin. Backend mengirim pesan yang
+   tersimpan dan waktu pengajuannya ke `POST /api/v1/analyze`.
+3. Backend membaca jadwal dan slot dari PostgreSQL. Slot alternatif harus masih tersedia dan
+   cocok dengan hasil ekstraksi. Jika preferensi kosong atau ambigu, admin tetap bisa
+   memproses slot awal yang diajukan customer.
+4. Backend mengirim intent, konteks jadwal dan daftar slot ke `POST /api/v1/draft-response`.
+   Respons review berisi `data.analysis`, `data.slots`, `data.draft` dan `data.error`.
+   Ketika AI gagal, `data.error` berisi kode kegagalan dan admin masih bisa membuat draft sendiri.
+5. Keputusan admin menggunakan `PATCH /api/reschedule-requests/:id` dengan `status` dan
+   `available_slot_id` opsional saat `APPROVED`. Backend mengecek ulang slot dalam transaksi.
+   Admin dapat membuat draft baru setelah persetujuan agar balasan merujuk slot final.
 
-## 2. Kolom tambahan yang disarankan di tabel `reschedule_requests` (PostgreSQL)
+Request review dijalankan saat admin membutuhkannya, termasuk untuk request yang tersimpan
+sebelum integrasi. Hasil AI dan edit draft berada di layar review. Salin draft sebelum
+meninggalkan request. Aplikasi tidak memiliki pengiriman pesan otomatis.
 
-Supaya hasil AI tersimpan dan bisa ditampilkan di halaman request/approval admin:
-
-```sql
-ALTER TABLE reschedule_requests
-  ADD COLUMN message_text       TEXT,
-  ADD COLUMN message_timestamp  TIMESTAMPTZ,
-  ADD COLUMN ai_intent          VARCHAR(20),     -- RESCHEDULE | CANCELLATION | SCHEDULE_INQUIRY | CONFIRMATION | OTHER
-  ADD COLUMN ai_confidence      NUMERIC(5,4),
-  ADD COLUMN ai_needs_review    BOOLEAN,
-  ADD COLUMN ai_review_reasons  JSONB,           -- ["LOW_CONFIDENCE", ...]
-  ADD COLUMN ai_preference      JSONB,           -- objek preference dari /api/v1/analyze
-  ADD COLUMN ai_draft_text      TEXT,
-  ADD COLUMN ai_draft_source    VARCHAR(10);     -- LLM | TEMPLATE
-```
-
-Semua kolom `ai_*` boleh `NULL`: kalau AI Service mati, request tetap tersimpan.
-
-## 3. Alur pemanggilan
-
-```js
-const ai = require('../services/aiServiceClient');
-
-// POST /api/reschedule-requests
-async function createRescheduleRequest(req, res) {
-  const { schedule_id, requested_date, requested_time, reason, message_text, message_timestamp } = req.body;
-  // ... validasi + cek schedule ada (404 jika tidak) ...
-
-  let aiFields = {};
-  if (message_text) {
-    const result = await ai.analyzeMessage({ message_text, message_timestamp });
-    if (result.ok) {
-      const { intent, confidence, needs_review, review_reasons, preference } = result.data;
-      aiFields = {
-        ai_intent: intent, ai_confidence: confidence, ai_needs_review: needs_review,
-        ai_review_reasons: review_reasons, ai_preference: preference,
-      };
-    } else {
-      console.warn('AI analyze gagal, lanjut tanpa AI:', result.error);
-    }
-  }
-
-  // requested_date/requested_time dari form tetap prioritas; jika kosong boleh diisi dari AI
-  const row = await db.insertRescheduleRequest({
-    schedule_id,
-    requested_date: requested_date ?? aiFields.ai_preference?.requested_date ?? null,
-    requested_time: requested_time ?? aiFields.ai_preference?.requested_time ?? null,
-    reason, message_text, message_timestamp, status: 'PENDING', ...aiFields,
-  });
-  return res.status(201).json({ data: row });
-}
-
-// Halaman detail request admin: slot yang cocok dengan preferensi customer
-async function getSuggestedSlots(request) {
-  const slots = await db.getAvailableSlots({ date_from: request.ai_preference?.date_from, date_to: request.ai_preference?.date_to });
-  return ai.filterSlotsByPreference(slots, request.ai_preference);
-}
-
-// Setelah admin approve/reject (PATCH /api/reschedule-requests/:id) atau saat admin klik "Buat draft"
-async function buildDraft(request, schedule, slots) {
-  const result = await ai.draftResponse({
-    intent: request.ai_intent || 'RESCHEDULE',
-    schedule,                                  // { id, customer_name, class_name, date, time }
-    preference: request.ai_preference,
-    available_slots: slots,                    // { slot_id, date, start_time, end_time, available }
-    status: request.status,                    // PENDING | APPROVED | REJECTED
-    approved_date: request.approved_date,
-    approved_time: request.approved_time,
-    message_text: request.message_text,
-  });
-  // Draft TIDAK dikirim otomatis: tampilkan di textarea agar admin bisa edit lalu kirim
-  return result.ok ? result.data : null;
-}
-```
-
-## 4. Perilaku saat AI gagal
-
-| Kondisi | `error.code` dari client | Yang dilakukan Backend/UI |
-|---|---|---|
-| AI Service mati | `AI_SERVICE_UNAVAILABLE` | Simpan request tanpa kolom `ai_*`; UI tampilkan "Analisis AI tidak tersedia" |
-| Timeout | `AI_SERVICE_TIMEOUT` | Sama seperti di atas |
-| Input salah | `VALIDATION_ERROR` (400) | Log; periksa payload |
-| Gemini kuota habis | — (tetap `ok: true`) | Draft otomatis memakai template, `source: "TEMPLATE"` |
+[Kontrak FastAPI](../../docs/AI_API_CONTRACT.md) · [Panduan menjalankan aplikasi](../../README.md)

@@ -1,10 +1,10 @@
 /**
  * Client AI Service untuk Backend Express (Node.js 18+, memakai fetch bawaan).
  *
- * Salin file ini ke backend (mis. src/services/aiServiceClient.js) dan set env:
+ * Backend menggunakan client ini. Set env di backend:
  *   AI_SERVICE_URL=http://localhost:8000
  *   AI_SERVICE_API_KEY=            (opsional, harus sama dengan AI_SERVICE_API_KEY di AI Service)
- *   AI_SERVICE_TIMEOUT_MS=10000
+ *   AI_SERVICE_TIMEOUT_MS=20000
  *
  * Semua fungsi TIDAK melempar error. Hasilnya selalu:
  *   { ok: true,  data: {...} }                       -> sukses
@@ -13,7 +13,7 @@
 
 const AI_SERVICE_URL = (process.env.AI_SERVICE_URL || 'http://localhost:8000').replace(/\/$/, '');
 const AI_SERVICE_API_KEY = process.env.AI_SERVICE_API_KEY || '';
-const AI_SERVICE_TIMEOUT_MS = Number(process.env.AI_SERVICE_TIMEOUT_MS || 10000);
+const AI_SERVICE_TIMEOUT_MS = Number(process.env.AI_SERVICE_TIMEOUT_MS || 20000);
 
 async function request(method, path, body) {
   const controller = new AbortController();
@@ -31,6 +31,9 @@ async function request(method, path, body) {
     const json = await res.json().catch(() => null);
     if (!res.ok) {
       return { ok: false, error: json?.error || { code: 'AI_SERVICE_ERROR', message: `HTTP ${res.status}` } };
+    }
+    if (!json?.data || typeof json.data !== 'object' || Array.isArray(json.data)) {
+      return { ok: false, error: { code: 'AI_INVALID_RESPONSE', message: 'AI response has no data object' } };
     }
     return { ok: true, data: json.data };
   } catch (err) {
@@ -84,9 +87,11 @@ function draftResponse(payload) {
  */
 function filterSlotsByPreference(slots, preference) {
   if (!preference) return slots.filter((s) => s.available !== false);
-  const { date_from, date_to, start_time, end_time } = preference;
+  const { date_from, date_to, start_time, end_time, requested_date, requested_time } = preference;
   return slots.filter((s) => {
     if (s.available === false) return false;
+    if (requested_date && s.date !== requested_date) return false;
+    if (requested_time && !start_time && s.start_time !== requested_time) return false;
     if (date_from && s.date < date_from) return false;
     if (date_to && s.date > date_to) return false;
     if (start_time && s.start_time < start_time) return false;

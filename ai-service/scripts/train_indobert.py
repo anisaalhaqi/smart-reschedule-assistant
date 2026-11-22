@@ -12,6 +12,7 @@ Untuk dipakai API: INTENT_MODEL_TYPE=indobert INTENT_MODEL_PATH=models/indobert-
 """
 import argparse
 import json
+import math
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -32,16 +33,20 @@ def main() -> int:
     import torch
     from sklearn.metrics import f1_score
     from transformers import (AutoModelForSequenceClassification, AutoTokenizer, DataCollatorWithPadding, Trainer,
-                              TrainingArguments)
+                              TrainingArguments, set_seed)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-model", default="indobenchmark/indobert-base-p1")
     parser.add_argument("--epochs", type=int, default=4)
     parser.add_argument("--lr", type=float, default=3e-5)
     parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--freeze-layers", type=int, default=0, help="Bekukan embedding dan N layer awal untuk eksperimen CPU.")
+    parser.add_argument("--output-dir", type=Path, default=OUT_DIR)
+    parser.add_argument("--checkpoints-dir", type=Path, default=ROOT / "models" / "indobert-checkpoints")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
+    set_seed(args.seed)
     label2id = {label: i for i, label in enumerate(INTENT_LABELS)}
     tokenizer = AutoTokenizer.from_pretrained(args.base_model)
 
@@ -67,16 +72,25 @@ def main() -> int:
         id2label={i: label for label, i in label2id.items()},
     )
 
+    if args.freeze_layers:
+        encoder_layers = model.bert.encoder.layer
+        if not 0 < args.freeze_layers <= len(encoder_layers):
+            parser.error("--freeze-layers harus sesuai jumlah layer encoder")
+        model.bert.embeddings.requires_grad_(False)
+        for layer in encoder_layers[:args.freeze_layers]:
+            layer.requires_grad_(False)
+
     def compute_metrics(pred):
         y_pred = np.argmax(pred.predictions, axis=-1)
         return {"macro_f1": f1_score(pred.label_ids, y_pred, average="macro")}
 
+    steps_per_epoch = math.ceil(len(train_ds) / args.batch_size)
     training_args = TrainingArguments(
-        output_dir=str(ROOT / "models" / "indobert-checkpoints"),
+        output_dir=str(args.checkpoints_dir),
         num_train_epochs=args.epochs, learning_rate=args.lr, per_device_train_batch_size=args.batch_size,
-        per_device_eval_batch_size=32, weight_decay=0.01, warmup_ratio=0.1, eval_strategy="epoch",
+        per_device_eval_batch_size=32, weight_decay=0.01, warmup_steps=math.ceil(0.1 * steps_per_epoch * args.epochs), eval_strategy="epoch",
         save_strategy="epoch", load_best_model_at_end=True, metric_for_best_model="macro_f1",
-        save_total_limit=1, seed=args.seed, report_to="none",
+        save_total_limit=1, save_only_model=True, seed=args.seed, report_to="none",
     )
     trainer = Trainer(model=model, args=training_args, train_dataset=train_ds, eval_dataset=val_ds,
                       data_collator=DataCollatorWithPadding(tokenizer), compute_metrics=compute_metrics)
@@ -84,15 +98,18 @@ def main() -> int:
     metrics = trainer.evaluate()
     print(f"Validation: {metrics}")
 
-    trainer.save_model(OUT_DIR)
-    tokenizer.save_pretrained(OUT_DIR)
-    (OUT_DIR / "model_meta.json").write_text(json.dumps({
+    trainer.save_model(args.output_dir)
+    tokenizer.save_pretrained(args.output_dir)
+    (args.output_dir / "model_meta.json").write_text(json.dumps({
         "model_version": datetime.now().strftime("indobert-%Y%m%d"),
-        "base_model": args.base_model,
+        "base_model": Path(args.base_model).name if Path(args.base_model).is_dir() else args.base_model,
+        "freeze_layers": args.freeze_layers,
+        "epochs": args.epochs,
+        "seed": args.seed,
         "uses_lexicon": lexicon_loaded(),
         "val_macro_f1": round(metrics.get("eval_macro_f1", 0.0), 4),
     }, indent=2))
-    print(f"Model tersimpan: {OUT_DIR}")
+    print(f"Model tersimpan: {args.output_dir}")
     return 0
 
 

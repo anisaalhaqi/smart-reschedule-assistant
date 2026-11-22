@@ -38,14 +38,14 @@ def generate(system_prompt: str, user_prompt: str, *, json_output: bool = False,
             resp = httpx.post(url, json=body, headers=headers, timeout=settings.llm_timeout_seconds)
             if resp.status_code in (400, 401, 403, 429):
                 # Kuota habis / key salah: retry tidak membantu, langsung fallback
-                logger.warning("Gemini menolak request (%s): %s", resp.status_code, resp.text[:200])
+                logger.warning("Gemini menolak request (%s)", resp.status_code)
                 return None
             resp.raise_for_status()
             parts = resp.json()["candidates"][0]["content"]["parts"]
             text = "".join(p.get("text", "") for p in parts).strip()
             if text:
                 return text
-        except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
+        except (httpx.HTTPError, KeyError, IndexError, ValueError, TypeError, AttributeError) as exc:
             logger.warning("Gemini gagal (percobaan %d): %s", attempt + 1, exc)
     return None
 
@@ -57,6 +57,6 @@ def generate_json(system_prompt: str, user_prompt: str) -> dict | None:
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        logger.warning("Output LLM bukan JSON valid: %s", raw[:200])
+        logger.warning("Output LLM bukan JSON valid")
         return None
     return data if isinstance(data, dict) else None

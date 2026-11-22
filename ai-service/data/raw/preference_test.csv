@@ -1,0 +1,26 @@
+message_text,requested_date,requested_time,time_of_day,date_from,date_to
+"Besok sore nggak bisa, pindah Sabtu pagi dong",2026-10-10,,pagi,2026-10-10,2026-10-10
+Bisa pindah besok sore?,2026-10-10,,sore,2026-10-10,2026-10-10
+Lusa malam masih ada jadwal?,2026-10-11,,malam,2026-10-11,2026-10-11
+"Slot Senin siang ada, Kak?",2026-10-12,,siang,2026-10-12,2026-10-12
+Mohon geser ke Selasa pukul 09:30,2026-10-13,09:30,pagi,2026-10-13,2026-10-13
+Kamis jam 3 sore bisa?,2026-10-15,15:00,sore,2026-10-15,2026-10-15
+"Jadwal biasanya Jumat, ganti Minggu pagi saja",2026-10-11,,pagi,2026-10-11,2026-10-11
+Hari ini malam masih buka?,2026-10-09,,malam,2026-10-09,2026-10-09
+Kak pindah minggu depan aja,,,,"2026-10-12","2026-10-18"
+Ada pilihan minggu depan pagi?,,,pagi,2026-10-12,2026-10-18
+"Ganti ke tanggal 17 Oktober 2026 jam 08.30, ya",2026-10-17,08:30,pagi,2026-10-17,2026-10-17
+Booking 2026-10-20 pukul 10:15 tersedia?,2026-10-20,10:15,pagi,2026-10-20,2026-10-20
+Tolong pindah ke Rabu,2026-10-14,,,2026-10-14,2026-10-14
+"Kak bsk pagi aja, bisa reschedule?",2026-10-10,,pagi,2026-10-10,2026-10-10
+Bisa ganti jadwal ke sore saja?,,,sore,,
+tolong pindah jadi jam 19:00,,19:00,malam,,
+Mau pindah ke tanggal 21 Oktober,2026-10-21,,,2026-10-21,2026-10-21
+"Kak pindah Sabtu ya, jam 8 pagi",2026-10-10,08:00,pagi,2026-10-10,2026-10-10
+Sabtu pagi tidak bisa. Bisa ganti Minggu sore?,2026-10-11,,sore,2026-10-11,2026-10-11
+Minta slot Selasa minggu depan pagi,2026-10-13,,pagi,2026-10-13,2026-10-13
+Kak aku ada urusan mendadak,,,,,
+Info membership bulanan dong,,,,,
+Pengen pindah jadwal tapi belum tahu kapan,,,,,
+Jumat depan malam tersedia?,2026-10-16,,malam,2026-10-16,2026-10-16
+Pindah dari jam 8 ke jam 9 pagi,,09:00,pagi,,

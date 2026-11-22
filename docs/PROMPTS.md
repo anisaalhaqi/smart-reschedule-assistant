@@ -8,7 +8,8 @@ dan dicatat di tabel riwayat di bawah. Versi aktif muncul di `GET /health` dan d
 - **Tujuan:** draft balasan WhatsApp yang sopan dan hangat untuk segmen ibu-ibu, lansia, dan kalangan menengah ke atas.
 - **Model:** Gemini (`GEMINI_MODEL`, default `gemini-2.5-flash`), temperature 0.4, thinking dimatikan.
 - **Konteks yang dikirim:** sapaan + nama panggilan, kelas, jadwal awal, pesan customer, keputusan admin,
-  jadwal disetujui, dan daftar slot tersedia (maks 5). Nomor telepon dan data sensitif lain tidak dikirim.
+  jadwal disetujui, dan daftar slot tersedia (maks 5). Integrasi Web mengirim draft tanpa teks pesan mentah.
+  Ekstraksi preferensi dapat mengirim teks pesan ke Gemini ketika fallback LLM aktif.
 - **Instruksi per intent:** `INTENT_INSTRUCTIONS`.
 
 ### Guardrail (`app/drafting.py::validate_draft`)
@@ -17,10 +18,8 @@ Draft LLM ditolak dan diganti template jika:
 
 | Kode | Arti |
 |---|---|
-| `UNKNOWN_DATE:<x>` | Menyebut tanggal yang tidak ada di jadwal awal/disetujui/slot |
-| `UNKNOWN_DAY:<x>` | Menyebut nama hari yang tidak cocok dengan tanggal mana pun di konteks |
-| `UNKNOWN_TIME:<x>` | Menyebut jam yang tidak ada di konteks |
-| `APPROVED_SLOT_NOT_MENTIONED` | Status APPROVED tetapi jam yang disetujui tidak disebut |
+| `UNKNOWN_OR_INCOMPLETE_SCHEDULE` | Penyebutan waktu tidak cocok dengan pasangan tanggal dan jam lengkap di konteks |
+| `APPROVED_SLOT_NOT_MENTIONED` | Pasangan tanggal dan jam yang disetujui tidak disebut lengkap |
 | `PLACEHOLDER_FOUND` | Ada `[ ]` atau `{ }` (mis. "[nama]") |
 | `EMPTY_OR_TOO_LONG` | Kosong atau lebih dari 1.200 karakter |
 
@@ -51,3 +50,4 @@ LLM → `requested_date: 2026-10-16`, `source: "LLM"`.
 |---|---|---|
 | `draft-v1` | Versi awal | — |
 | `draft-v2` | PENDING + ada slot → wajib menawarkan slot; jadwal disetujui wajib ditulis lengkap tanggal + jam; larang salam berbasis waktu ("selamat siang") | Uji awal: draft PENDING tidak menawarkan slot, draft APPROVED gagal guardrail, salam waktu bisa salah |
+| `draft-v3` | Keputusan admin eksplisit, isi pesan dianggap konteks, dan tanggal serta jam diperiksa sebagai satu pasangan | Menjaga draft tetap sesuai slot dan status request |
