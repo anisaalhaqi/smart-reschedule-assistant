@@ -1,4 +1,5 @@
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -19,4 +20,4 @@ def client():
 def offline_llm(monkeypatch):
     """Test tidak memanggil Gemini sungguhan; test tertentu menimpa ini dengan output palsu."""
     from app import llm
-    monkeypatch.setattr(llm, "generate", lambda *a, **k: None)
+    monkeypatch.setattr(llm, "settings", replace(llm.settings, gemini_api_key=""))

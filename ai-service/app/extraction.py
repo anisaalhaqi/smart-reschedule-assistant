@@ -55,6 +55,7 @@ _WORD_CLAUSE_SPLIT_RE = re.compile(r"\b(?:tapi|terus|soalnya|karena|lalu)\b")
 _WEEK_RE = re.compile(r"\b(minggu|pekan) (depan|ini|lalu|kemarin)\b")
 _N_WEEKS_RE = re.compile(r"\b\d+ (minggu|pekan)\b")
 _DAY_RE = re.compile(rf"\b(?:hari )?({_DAY_ALT})(?: (ini|depan))?\b")
+_DATE_ISO_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 _DATE_NUMERIC_RE = re.compile(r"(?<!jam )(?<!pukul )\b(\d{1,2})[/-](\d{1,2})(?:[/-](\d{2,4}))?\b")
 _DATE_MONTH_RE = re.compile(rf"\b(?:tanggal )?(\d{{1,2}}) ({_MONTH_ALT})(?: (\d{{4}}))?\b")
 _DATE_DAY_ONLY_RE = re.compile(r"\btanggal (\d{1,2})\b")
@@ -165,7 +166,13 @@ def _parse_clause(clause: str, today: date) -> _ClauseInfo:
     text = clause
 
     # --- tanggal eksplisit ---
-    if m := _DATE_MONTH_RE.search(text):
+    if m := _DATE_ISO_RE.search(text):
+        try:
+            info.date = date.fromisoformat(m.group(0))
+        except ValueError:
+            info.ambiguous = True
+        text = text.replace(m.group(0), " ")
+    elif m := _DATE_MONTH_RE.search(text):
         day, month = int(m.group(1)), MONTHS[m.group(2)]
         year = int(m.group(3)) if m.group(3) else today.year
         info.date = _safe_date(year, month, day, today, roll_year=not m.group(3))
@@ -359,10 +366,15 @@ def extract_preference_llm(message_text: str, message_timestamp: datetime | None
     try:
         if data.get("requested_date"):
             d = date.fromisoformat(str(data["requested_date"]))
+            if d < ts.date():
+                return None
             pref.requested_date = pref.date_from = pref.date_to = d.isoformat()
             pref.day_name = DAY_LABELS[d.weekday()]
         if data.get("requested_time"):
-            h, m = (int(x) for x in str(data["requested_time"]).split(":")[:2])
+            raw_time = data["requested_time"]
+            if not isinstance(raw_time, str) or not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", raw_time):
+                return None
+            h, m = (int(x) for x in raw_time.split(":"))
             pref.requested_time = pref.start_time = _hhmm(h, m)
             end = min(h * 60 + m + 60, 23 * 60 + 59)
             pref.end_time = _hhmm(end // 60, end % 60)

@@ -105,3 +105,66 @@ def test_api_key_enforced(client, monkeypatch):
     assert client.post("/api/v1/classify", json={"message_text": "halo"}).status_code == 401
     assert client.post("/api/v1/classify", json={"message_text": "halo"},
                        headers={"X-API-Key": "secret"}).status_code == 200
+
+
+def test_llm_cannot_mix_slot_dates_and_times(client, monkeypatch):
+    monkeypatch.setattr(drafting.llm, "generate", lambda *a, **k: (
+        "Halo Kak, ada slot Sabtu, 17 Oktober 2026 pukul 16:00 ya."
+    ))
+    slots = [SLOTS[0], {
+        "slot_id": 704, "date": "2026-10-18", "start_time": "16:00", "available": True,
+    }]
+    response = client.post("/api/v1/draft-response", json={"intent": "RESCHEDULE", "available_slots": slots})
+    assert response.json()["data"]["source"] == "TEMPLATE"
+
+
+def test_llm_must_name_the_approved_date_and_time(client, monkeypatch):
+    monkeypatch.setattr(drafting.llm, "generate", lambda *a, **k: "Halo Kak, sudah kami pindahkan ke pukul 08:00.")
+    response = client.post("/api/v1/draft-response", json={
+        "intent": "RESCHEDULE", "status": "APPROVED", "approved_date": "2026-10-17", "approved_time": "08:00",
+    })
+    assert response.json()["data"]["fallback_reason"] == "GUARDRAIL:APPROVED_SLOT_NOT_MENTIONED"
+
+
+def test_draft_invalid_calendar_date_is_validation_error(client):
+    response = client.post("/api/v1/draft-response", json={
+        "intent": "RESCHEDULE",
+        "available_slots": [{"date": "2026-02-30", "start_time": "08:00"}],
+    })
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "VALIDATION_ERROR"
+
+
+def test_draft_pending_confirmation_does_not_repeat_original_schedule(client):
+    data = client.post("/api/v1/draft-response", json={
+        "intent": "CONFIRMATION", "status": "PENDING", "schedule": SCHEDULE,
+        "message_text": "Oke kak saya bisa Sabtu.",
+    }).json()["data"]
+    assert "15 Oktober" not in data["draft_text"]
+    assert data["mentioned_slots"] == []
+
+
+def test_draft_uses_gemini_rest_response(client, monkeypatch):
+    from dataclasses import replace
+
+    import httpx
+
+    from app import llm
+
+    monkeypatch.setattr(llm, "settings", replace(llm.settings, gemini_api_key="test-key"))
+
+    def post(url, *, json, headers, timeout):
+        assert url.endswith(":generateContent")
+        assert headers["x-goog-api-key"] == "test-key"
+        assert timeout > 0
+        assert "Sabtu, 17 Oktober 2026 pukul 08:00" in json["contents"][0]["parts"][0]["text"]
+        return httpx.Response(200, request=httpx.Request("POST", url), json={
+            "candidates": [{"content": {"parts": [{"text": "Halo Kak, tersedia Sabtu, 17 Oktober 2026 pukul 08:00."}]}}],
+        })
+
+    monkeypatch.setattr(llm.httpx, "post", post)
+    data = client.post("/api/v1/draft-response", json={
+        "intent": "RESCHEDULE", "available_slots": SLOTS,
+    }).json()["data"]
+    assert data["source"] == "LLM"
+    assert data["mentioned_slots"] == [{"slot_id": 701, "date": "2026-10-17", "start_time": "08:00"}]

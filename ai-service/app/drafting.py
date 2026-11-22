@@ -5,8 +5,7 @@ disebut ada di data yang dikirim Backend (jadwal awal, jadwal disetujui, slot
 tersedia). Jika LLM nonaktif, gagal, atau melanggar guardrail, dipakai template.
 """
 import re
-from dataclasses import dataclass, field
-from datetime import date
+from dataclasses import dataclass
 
 from app import llm
 from app.extraction import DAY_LABELS, MONTHS, format_date_id
@@ -17,10 +16,12 @@ MAX_SLOTS_IN_DRAFT = 5
 _NAME_PREFIXES = {"bu", "ibu", "pak", "bapak", "kak", "mbak", "mas"}
 
 _MONTH_ALT = "|".join(sorted(MONTHS, key=len, reverse=True))
-_DATE_IN_TEXT_RE = re.compile(rf"\b(\d{{1,2}})\s+({_MONTH_ALT})\b", re.I)
-_TIME_IN_TEXT_RE = re.compile(r"\b(\d{1,2})[.:](\d{2})\b")
-_HOUR_IN_TEXT_RE = re.compile(r"\b(?:jam|pukul)\s+(\d{1,2})\b(?![.:]\d)", re.I)
-_DAY_IN_TEXT_RE = re.compile(r"\b(senin|selasa|rabu|kamis|jumat|sabtu|minggu)\b(?!\s+(?:depan|ini|lalu))", re.I)
+_TEMPORAL_RE = re.compile(
+    rf"\b(?:{'|'.join(DAY_LABELS)}|{_MONTH_ALT}|besok|lusa|kemarin|hari ini|nanti pagi|nanti sore)\b"
+    r"|\b\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4}\b|\b\d{1,2}[/-]\d{1,2}\b"
+    r"|\b\d{1,2}[:.]\d{2}\b|\b(?:tanggal|jam|pukul)\s+\d",
+    re.I,
+)
 
 
 @dataclass
@@ -37,8 +38,6 @@ class _Context:
     req: DraftResponseRequest
     greeting: str
     slots: list[SlotIn]
-    allowed_dates: set[date] = field(default_factory=set)
-    allowed_times: set[str] = field(default_factory=set)
 
 
 def _greeting(req: DraftResponseRequest) -> str:
@@ -55,20 +54,7 @@ def _slot_label(slot: SlotIn) -> str:
 
 def _build_context(req: DraftResponseRequest) -> _Context:
     slots = sorted((s for s in req.available_slots if s.available), key=lambda s: (s.date, s.start_time))
-    ctx = _Context(req=req, greeting=_greeting(req), slots=slots[:MAX_SLOTS_IN_DRAFT])
-    if req.schedule:
-        ctx.allowed_dates.add(date.fromisoformat(req.schedule.date))
-        ctx.allowed_times.add(req.schedule.time)
-    if req.approved_date:
-        ctx.allowed_dates.add(date.fromisoformat(req.approved_date))
-    if req.approved_time:
-        ctx.allowed_times.add(req.approved_time)
-    for s in ctx.slots:
-        ctx.allowed_dates.add(date.fromisoformat(s.date))
-        ctx.allowed_times.add(s.start_time)
-        if s.end_time:
-            ctx.allowed_times.add(s.end_time)
-    return ctx
+    return _Context(req=req, greeting=_greeting(req), slots=slots[:MAX_SLOTS_IN_DRAFT])
 
 
 def _original_label(req: DraftResponseRequest) -> str | None:
@@ -120,9 +106,10 @@ def render_template(ctx: _Context) -> tuple[str, list[dict]]:
         if status == RequestStatus.APPROVED:
             text = (f"Halo {g}, {sesi}{jadwal} sudah kami batalkan ya. Semoga semuanya lancar, dan kabari kami kapan "
                     f"saja jika ingin booking kembali 🙏")
+        elif status == RequestStatus.REJECTED:
+            text = f"Halo {g}, mohon maaf, permintaan pembatalan {sesi}{jadwal} belum bisa kami penuhi ya 🙏"
         else:
-            text = (f"Halo {g}, pesan pembatalan {sesi}{jadwal} sudah kami terima dan sedang kami proses ya. "
-                    f"Kabari kami kapan saja jika ingin booking kembali 🙏")
+            text = f"Halo {g}, permintaan pembatalan {sesi}{jadwal} sudah kami terima dan sedang kami tinjau ya 🙏"
         return text, []
 
     if req.intent == Intent.SCHEDULE_INQUIRY:
@@ -134,11 +121,11 @@ def render_template(ctx: _Context) -> tuple[str, list[dict]]:
                 f"Apakah {g} berkenan dengan hari atau jam lain?"), []
 
     if req.intent == Intent.CONFIRMATION:
-        target = approved or original
+        target = approved if status == RequestStatus.APPROVED else None
         if target:
             mentions = _approved_mentions(req) if approved else []
             return f"Terima kasih {g} atas konfirmasinya 🙏 Kami tunggu kehadirannya pada {target} ya.", mentions
-        return f"Terima kasih {g} atas konfirmasinya 🙏 Sampai bertemu di Gymnasyum ya.", []
+        return f"Terima kasih {g} atas konfirmasinya 🙏 Kami akan cek jadwalnya dan mengabari kembali ya.", []
 
     return f"Halo {g}, terima kasih sudah menghubungi Gymnasyum 🙏 Pesan {g} sudah kami terima dan akan segera kami bantu ya.", []
 
@@ -163,39 +150,46 @@ def validate_draft(text: str, ctx: _Context) -> tuple[str | None, list[dict]]:
     if re.search(r"[\[\]{}]", text):
         return "PLACEHOLDER_FOUND", []
 
-    allowed_days_months = {(d.day, d.month) for d in ctx.allowed_dates}
-    for m in _DATE_IN_TEXT_RE.finditer(text):
-        if (int(m.group(1)), MONTHS[m.group(2).lower()]) not in allowed_days_months:
-            return f"UNKNOWN_DATE:{m.group(0)}", []
-
-    allowed_weekdays = {DAY_LABELS[d.weekday()].lower() for d in ctx.allowed_dates}
-    for m in _DAY_IN_TEXT_RE.finditer(text):
-        if m.group(1).lower() not in allowed_weekdays:
-            return f"UNKNOWN_DAY:{m.group(1)}", []
-
-    times_found = {f"{int(h):02d}:{mm}" for h, mm in _TIME_IN_TEXT_RE.findall(text)}
-    for t in times_found:
-        if t not in ctx.allowed_times:
-            return f"UNKNOWN_TIME:{t}", []
-    allowed_hours = {int(t[:2]) for t in ctx.allowed_times}
-    for h in _HOUR_IN_TEXT_RE.findall(text):
-        if int(h) not in allowed_hours and int(h) + 12 not in allowed_hours:
-            return f"UNKNOWN_TIME:jam {h}", []
-
     req = ctx.req
-    if req.status == RequestStatus.APPROVED and req.approved_time and req.approved_time not in times_found:
-        return "APPROVED_SLOT_NOT_MENTIONED", []
+    approved = _approved_label(req) if req.status == RequestStatus.APPROVED else None
+    original = _draft_original(req)
+    remaining = text
+    mentioned = []
 
-    if req.status == RequestStatus.APPROVED and req.approved_date:
+    # Remove only complete date/time pairs from the trusted context. A mix of the
+    # date of one slot and the hour of another must still fail validation.
+    if approved:
+        if not re.search(_label_pattern(approved), text, re.I):
+            return "APPROVED_SLOT_NOT_MENTIONED", []
         mentioned = _approved_mentions(req)
-    else:
-        dates_found = {(int(d), MONTHS[mo.lower()]) for d, mo in _DATE_IN_TEXT_RE.findall(text)}
-        mentioned = [
-            _mentioned(s) for s in ctx.slots
-            if s.start_time in times_found
-            and (not dates_found or (date.fromisoformat(s.date).day, date.fromisoformat(s.date).month) in dates_found)
-        ]
+        remaining = re.sub(_label_pattern(approved), "", remaining, flags=re.I)
+
+    for slot in ctx.slots:
+        label = f"{format_date_id(slot.date)} pukul {slot.start_time}"
+        pattern = _label_pattern(label)
+        if slot.end_time:
+            pattern += rf"(?:\s*[-–]\s*{re.escape(slot.end_time)}\b)?"
+        remaining, count = re.subn(pattern, "", remaining, flags=re.I)
+        if count and not approved:
+            mentioned.append(_mentioned(slot))
+    if original:
+        remaining = re.sub(_label_pattern(original), "", remaining, flags=re.I)
+
+    if _TEMPORAL_RE.search(remaining):
+        return "UNKNOWN_OR_INCOMPLETE_SCHEDULE", []
     return None, mentioned
+
+
+def _label_pattern(label: str) -> str:
+    return rf"\b{re.escape(label)}\b"
+
+
+def _draft_original(req: DraftResponseRequest) -> str | None:
+    if req.intent == Intent.CANCELLATION:
+        return _original_label(req)
+    if req.intent == Intent.RESCHEDULE and req.status == RequestStatus.APPROVED:
+        return _original_label(req)
+    return None
 
 
 # ---------------------------------------------------------------- entrypoint
@@ -207,7 +201,7 @@ def create_draft(req: DraftResponseRequest) -> DraftResult:
         "intent": req.intent.value,
         "greeting": ctx.greeting,
         "class_name": req.schedule.class_name if req.schedule else None,
-        "original_schedule": _original_label(req),
+        "original_schedule": _draft_original(req),
         "approved_schedule": _approved_label(req),
         "status": req.status.value,
         "slot_lines": [_slot_label(s) for s in ctx.slots],
@@ -222,4 +216,3 @@ def create_draft(req: DraftResponseRequest) -> DraftResult:
     if reason:
         return DraftResult(template_text, template_mentions, "TEMPLATE", fallback_reason=f"GUARDRAIL:{reason}")
     return DraftResult(llm_text, mentions, "LLM")
-
